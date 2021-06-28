@@ -50,5 +50,6 @@ class Settings:
             {'name':'Frank Chan'},
             {'name':'Lynn 陳'},
             {'name':'相逢一笑', 'id':'XFYXSZ'},
-            {'name':'太棒了'}
+            {'name':'太棒了'},
+            {'name':'Alin'}
         ]

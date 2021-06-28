@@ -76,6 +76,7 @@ class Actions:
                 condition |= len(black_members) + len(moveout_members) >= settings['blacklist']
             if condition == False:
                 logger.info('threshold condition does not meet')
+                continue
 
             group_info['new_members'] = new_members
             group_info['blacklist'] = black_members
