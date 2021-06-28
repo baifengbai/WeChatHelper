@@ -1,0 +1,14 @@
+{
+  "actions":{
+    "report_group_info":{
+      "groups":[
+        "测试A"
+      ],
+      "history_dir":".\\history\\group_info\\",
+      "report_to":"briadmin",
+      "threshold":{
+        "new_member":0
+      }
+    }
+  }
+}
