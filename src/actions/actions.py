@@ -108,7 +108,7 @@ class Actions:
         Actions.send_text(win, name, info)
 
     def send_text(win, name, text):
-        if name != None:
+        if name != '':
             UI_Chats.chat_to(win, name)
         edit = UI_Chats.click_edit(win)
         edit.type_keys(Utils.parse_keys(text), pause=0)
