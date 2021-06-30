@@ -12,10 +12,12 @@
           "【BRI】5️⃣8️⃣王大成-华裔有為"
         ],
         "report_to":"briadmin",
-        "member":{
-          "id":"",
-          "name":""
-        }
+        "members":[
+          {
+            "id":"",
+            "name":""
+          }
+        ]
       }
     }
 }

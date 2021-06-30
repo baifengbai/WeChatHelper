@@ -20,9 +20,7 @@ class Dlg_AddMember:
         # UIApi.click_control(edit)
         edit.draw_outline()
         edit.set_focus()
-        edit.type_keys(name)
-        time.sleep(1)
-        edit.type_keys('{ENTER}')
+        UI_Comm.send_text(edit, name)
 
         # if the name exists, it must have only 1 candidate and 1 selected
         n1 = Dlg_AddMember.number_candidate(pwin)

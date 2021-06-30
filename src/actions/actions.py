@@ -4,6 +4,7 @@
 #
 import datetime
 from helper.my_logging import *
+from ui.comm import UI_Comm
 from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
 from update_history import History
@@ -104,15 +105,13 @@ class Actions:
         info += '黑名单：'+str(len(moveout))+'\n'
         for s in moveout:
             info += '  "'+s['name']+'"\n'
-        logger.info(info)
         Actions.send_text(win, name, info)
 
     def send_text(win, name, text):
         if name != '':
             UI_Chats.chat_to(win, name)
         edit = UI_Chats.click_edit(win)
-        edit.type_keys(Utils.parse_keys(text), pause=0)
-        edit.type_keys('{ENTER}')
+        UI_Comm.send_text(edit, text)
 
     def get_group_info(win, group_name):
         UI_Chats.click_chats_button(win)

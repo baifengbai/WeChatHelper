@@ -34,12 +34,6 @@ class UI_Chats:
             return False
         return True
 
-    def send_text(win, text):
-        # parse text
-        parsed = Utils.parse_keys(text)
-        win.type_keys(parsed)
-        win.type_keys('{ENTER}')
-
     # history = {
     #   members:['name1', ...],
     #   msgs:[{tag:time, msg:[text1, text2, ...]}]
@@ -89,10 +83,6 @@ class UI_Chats:
         UI_Comm.click_control(edit)
         return edit
 
-    def send_text(win, text):
-        win.type_keys(text)
-        win.type_keys('{ENTER}')
-
     # in chats window, using 'search' to find name
     def search_name(win, name):
         # put focus in 'Search Edit' field
@@ -103,22 +93,20 @@ class UI_Chats:
         UI_Comm.click_control(search)   # get focus
 
         # entering [name] in edit box, then 'Enter'
-        win.type_keys(name)
-        time.sleep(1)   # delay for entered text to be accepted
-        win.type_keys('{ENTER}')
+        UI_Comm.send_text(search, name)
 
         # check if we see chat 'title' turn to the name
         found = False
-        try:
-            title = win.window(title=name, control_type='Button', found_index=0)
-            title.draw_outline()
-            found = (title.window_text() == name)
-        except pywinauto.findwindows.ElementNotFoundError:
-            pass
-
-        if found:
-            logger.info('chat to "%s"', name)
-        time.sleep(1)
+        # wait short time
+        wt = 5
+        while wt > 0:
+            if UI_Chats.get_chat_name(win) == name:
+                found = True
+                logger.info('chat to "%s"', name)
+                break
+            wt -= 1
+            time.sleep(0.2)
+            search.type_keys('{ENTER}')
         return found
 
     def open_chat_info_window(win):

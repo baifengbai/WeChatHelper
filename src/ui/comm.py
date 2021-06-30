@@ -2,7 +2,9 @@
 # Written By:   Weiping Liu
 # Created:      Jun 22, 2021
 #
+import time
 import pywinauto
+from helper.utils import Utils
 from helper.my_logging import *
 
 logger = getMyLogger(__name__)
@@ -29,6 +31,12 @@ class UI_Comm:
         pywinauto.mouse.click(button='left', coords=(coords.left+x, coords.top+y))
         if highlight is True:
             control.draw_outline()
+
+    def send_text(control, text):
+        # parse text
+        control.type_keys(Utils.parse_keys(text), pause=0)
+        time.sleep(1)   # have to delay short time, or 'Enter' does not work!
+        control.type_keys('{ENTER}')
 
     def mouse_scroll(control, dist):
         coords = control.rectangle()

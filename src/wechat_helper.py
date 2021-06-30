@@ -6,11 +6,9 @@ import sys, os
 from helper.my_logging import *
 from ui.comm import UI_Comm
 from settings.settings import Settings
-from hooks.new_member import NewMember
 from actions.actions import Actions
 import pywinauto
 
-logger = getMyLogger(__name__, __file__)
 
 def main(setting_file):
     logger.info('Using pywinauto version: %s', pywinauto.__version__)
@@ -41,5 +39,6 @@ if __name__ == '__main__':
         logger.warning('need setting file')
     else:
         setting_file = os.path.abspath(sys.argv[1])
+        logger = getMyLogger(__name__, setting_file)
         if os.path.exists(setting_file):
             main(setting_file)

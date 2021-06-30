@@ -2,12 +2,13 @@
 # Written By:   Weiping Liu
 # Created:      Jun 22, 2021
 #
+import os
 import logging
 from logging.handlers import RotatingFileHandler
 
 # logging.basicConfig(handlers=[logging.FileHandler('log.txt', 'w', 'utf-8')])
 def getMyLogger(name=None, fn=None, level=None):
-    logger = logging.getLogger('mylog')
+    logger = logging.getLogger(name)
     if fn != None:
         if level != None:
             logger.setLevel(level)
@@ -20,7 +21,7 @@ def getMyLogger(name=None, fn=None, level=None):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-        logfn = 'logs\\wechat_helper.log'
+        logfn = 'logs\\'+os.path.basename(fn).replace('.json', '.log')
         # handler = RotatingFileHandler(logfn, maxBytes=100000, backupCount=1)
         handler = logging.FileHandler(logfn, 'a', 'utf-8')
         handler.setFormatter(formatter)
