@@ -51,5 +51,7 @@ class Settings:
             {'name':'Lynn 陳'},
             {'name':'相逢一笑', 'id':'XFYXSZ'},
             {'name':'太棒了'},
-            {'name':'Alin'}
+            {'name':'Alin'},
+            {'name':'美国英语写作课大学申请辅导Susan'},
+            {'name':'🎵🎤Dansy好声音YouTube频道'}
         ]

@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 
 # logging.basicConfig(handlers=[logging.FileHandler('log.txt', 'w', 'utf-8')])
 def getMyLogger(name=None, fn=None, level=None):
-    logger = logging.getLogger(name)
+    logger = logging.getLogger('mylog')
     if fn != None:
         if level != None:
             logger.setLevel(level)
@@ -22,8 +22,8 @@ def getMyLogger(name=None, fn=None, level=None):
         logger.addHandler(handler)
 
         logfn = 'logs\\'+os.path.basename(fn).replace('.json', '.log')
-        # handler = RotatingFileHandler(logfn, maxBytes=100000, backupCount=1)
-        handler = logging.FileHandler(logfn, 'a', 'utf-8')
+        handler = RotatingFileHandler(logfn, mode='a', encoding='utf-8', maxBytes=100000, backupCount=1)
+        # handler = logging.FileHandler(logfn, 'a', 'utf-8')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
