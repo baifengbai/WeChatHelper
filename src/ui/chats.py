@@ -79,19 +79,40 @@ class UI_Chats:
 
     # click the edit box
     def click_edit(win):
+        UI_Chats.click_chats_button(win)
         edit = win.window(title='Enter', control_type='Edit')
-        UI_Comm.click_control(edit)
+        retry = 3
+        while retry > 0:
+            UI_Comm.click_control(edit)
+            if edit.has_keyboard_focus():
+                break
+            time.sleep(0.2)
+            retry -= 1
+
+        if retry == 0 and not edit.has_keyboard_focus():
+            logger.warning('failed set focus on "edit"')
+            raise Error
         return edit
+
+    def set_focus_search(win):
+        UI_Chats.click_chats_button(win)
+        # put focus in 'Search Edit' field
+        search = win.window(title=u'Search', control_type='Edit')
+        retry = 3
+        while retry > 0:
+            if search.has_keyboard_focus():
+                break
+            UI_Comm.click_control(search)   # get focus
+            time.sleep(0.2)
+            retry -= 1
+        if retry == 0 and not search.has_keyboard_focus():
+            logger.warning('failed set focus on "search"')
+            raise Error
+        return search
 
     # in chats window, using 'search' to find name
     def search_name(win, name):
-        # put focus in 'Search Edit' field
-        search = win.window(title=u'Search', control_type='Edit')
-        # here we have 2 clicks, in case the focus was not in the window
-        # first click activate the window, second click put focus
-        UI_Comm.click_control(search)   # get focus
-        UI_Comm.click_control(search)   # get focus
-
+        search = UI_Chats.set_focus_search(win)
         # entering [name] in edit box, then 'Enter'
         UI_Comm.send_text(search, name)
 
