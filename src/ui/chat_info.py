@@ -40,8 +40,22 @@ class UI_ChatInfo:
         return {'name':group_name, 'announce':announce, 'members':members}
 
     def open_chat_info(win):
-        button = win.window(title='Chat Info', control_type='Button')
-        UI_Comm.click_control(button)
+        title='Chat Info'
+        try:
+            pwin = win.window(title=title, control_type='Window')
+            if pwin.window_text() == title:
+                return pwin
+        except pywinauto.findwindows.ElementNotFoundError:
+            button = win.window(title='Chat Info', control_type='Button')
+            UI_Comm.click_control(button)
+
+        try:
+            pwin = win.window(title=title, control_type='Window')
+            if pwin.window_text() == title:
+                return pwin
+        except pywinauto.findwindows.ElementNotFoundError:
+            logger.error('failed open "Chat Info" window')
+        return None
 
     def close_chat_info(win):
         UI_Chats.click_edit(win)

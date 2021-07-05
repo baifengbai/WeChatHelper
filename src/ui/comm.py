@@ -37,6 +37,8 @@ class UI_Comm:
         control.type_keys(Utils.parse_keys(text), pause=0)
         time.sleep(1)   # have to delay short time, or 'Enter' does not work!
         control.type_keys('{ENTER}')
+        # in case of input method, first Enter used as confirm input
+        control.type_keys('{ENTER}')
 
     def mouse_scroll(control, dist):
         coords = control.rectangle()

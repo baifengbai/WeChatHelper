@@ -17,11 +17,17 @@ class Settings:
             {'name':'stephen huang', 'id':'stephenof2'},    # 加朋友
             {'name':'天道酬勤', 'id':'fd20201124'}, # 海运
             {'name':'心静如茶', 'id':'fd20201155'}, # 海运
-            {'name':'小美', 'id':'Yt-mting'},
+            # {'name':'小美', 'id':'Yt-mting'},
             {'name':'讓愛領先','id':'joseph6412ho'},
             {'name':'史蒂文','id':'wxid_ww8nnh6vn3sr12'},
             {'name':'Chun yeung'},  # 加朋友
             {'name':'yeung'},       # 加朋友
+            {'name':'美国英语写作课大学申请辅导Susan'},
+            {'name':'🎵🎤Dansy好声音YouTube频道', 'id':'dansywu'},
+            {'name':'慕康医药Lily', 'id':'yinyinyin2n'},
+            {'name':'达美医疗Selena'},
+            {'name':'燕献凯 Yan Xiankai'},
+            {'name':'相逢一笑', 'id':'XFYXSZ'},
         ]
 
     def get_blacklist():
@@ -49,9 +55,7 @@ class Settings:
             {'name':'Zhang Cruise'},
             {'name':'Frank Chan'},
             {'name':'Lynn 陳'},
-            {'name':'相逢一笑', 'id':'XFYXSZ'},
             {'name':'太棒了'},
             {'name':'Alin'},
-            {'name':'美国英语写作课大学申请辅导Susan'},
-            {'name':'🎵🎤Dansy好声音YouTube频道'}
+            # {'name':'', 'id':''},
         ]

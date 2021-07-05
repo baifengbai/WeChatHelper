@@ -2,22 +2,10 @@
   "actions":{
     "remove_member":{
         "groups":[
-          "【BRI】4️⃣2️⃣朱偉人-华裔有為",
-          "【BRI】4️⃣3️⃣徐大麟-华裔有為",
-          "【BRI】4️⃣8️⃣尹集成-华裔有為",
-          "【BRI】5️⃣4️⃣龔行憲-华裔有為",
-          "【BRI】5️⃣5️⃣張藴禮-華裔有為",
-          "【BRI】5️⃣6️⃣沈悅-華裔有為",
-          "【BRI】5️⃣7️⃣Regina华裔有為",
-          "【BRI】5️⃣8️⃣王大成-华裔有為"
+          "测试A"
         ],
-        "report_to":"briadmin",
-        "members":[
-          {
-            "id":"",
-            "name":""
-          }
-        ]
+        "report_to":"",
+        "comment":"members from Settings['get_move_out']"
       }
     }
 }

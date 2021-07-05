@@ -7,6 +7,7 @@ from helper.my_logging import *
 from ui.comm import UI_Comm
 from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
+from ui.delete_member import Dlg_DeleteMember
 from update_history import History
 from settings.settings import Settings
 from helper.utils import Utils
@@ -17,9 +18,15 @@ class Actions:
     def remove_member(win, settings):
         logger.info('action: "remove member"')
         groups = settings['groups']
+        if 'members' in settings:
+            members = settings['members']
+        else:
+            logger.info('remove members in [settings]')
+            members = Settings.get_moveout()
+
         for group in groups:
             logger.info('group: %s', group)
-            removed = Actions.remove_from_group(win, group, settings['members'])
+            removed = Actions.remove_from_group(win, group, members)
             if len(removed) == 0:
                 continue
             text = ''
@@ -35,16 +42,18 @@ class Actions:
 
         UI_Chats.click_chats_button(win)
         UI_Chats.chat_to(win, group_name)
-        UI_ChatInfo.open_chat_info(win)
-        # time.sleep(1)   # wait window open & ready
-        pwin = win.window(title='Chat Info', control_type='Window')
-        button = Actions.find_delete_member_button(pwin)
-        if button == None:
-            logger.warning('did not find "Delete" button')
-            return []
-        UI_Comm.click_control(button)
-        del_member_window = pwin.window(title='DeleteMemberWnd', control_type='Window')
-        ...
+        for member in members:
+            pwin = UI_ChatInfo.open_chat_info(win)
+            if pwin == None:
+                break
+            delete = Actions.find_delete_member_button(pwin)
+            if delete == None:
+                logger.warning('you don\'t have right to remove member')
+                continue
+            UI_Comm.click_control(delete)
+            dlg = pwin.window(title='DeleteMemberWnd', control_type='Window')
+            if Dlg_DeleteMember.delete_member(dlg, member) == True:
+                removed.append(member)
         return removed
 
     def find_delete_member_button(pwin):
