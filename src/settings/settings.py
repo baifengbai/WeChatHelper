@@ -28,6 +28,7 @@ class Settings:
             {'name':'达美医疗Selena'},
             {'name':'燕献凯 Yan Xiankai'},
             {'name':'相逢一笑', 'id':'XFYXSZ'},
+            {'name':'Zheng'},
         ]
 
     def get_blacklist():
@@ -46,7 +47,6 @@ class Settings:
             {'name':'Zhang Owen'},
             {'name':'杰弗裡·雲鵬'},
             {'name':'chike wu'},
-            {'name':'Zheng'},
             {'name':'Gonzalez'},
             {'name':'Chan Raymond'},
             {'name':'能力強'},

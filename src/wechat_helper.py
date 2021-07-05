@@ -24,16 +24,16 @@ def main(setting_file):
 
     # raise window on top
     win.set_focus()
-    
+
     # before doing any action, make sure there is no sub-windows in open,
     # and any special input method not active (cause input problem)
 
     actions = settings['actions']
     if 'report_group_info' in actions:
         Actions.report_group_info(win, actions['report_group_info'])
-    elif 'welcome_new_member' in actions:
+    if 'welcome_new_member' in actions:
         Actions.welcome_new_member(win, actions['welcome_new_member'])
-    elif 'remove_member' in actions:
+    if 'remove_member' in actions:
         Actions.remove_member(win, actions['remove_member'])
     logger.info('no more actions')
     # update_history()
