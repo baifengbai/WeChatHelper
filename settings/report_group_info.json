@@ -9,10 +9,14 @@
         "【BRI】5️⃣5️⃣張藴禮-華裔有為",
         "【BRI】5️⃣6️⃣沈悅-華裔有為",
         "【BRI】5️⃣7️⃣Regina华裔有為",
-        "【BRI】5️⃣8️⃣王大成-华裔有為"
+        "【BRI】5️⃣8️⃣王大成-华裔有為",
+        "【BRI】5️⃣9️⃣胡正明-華裔有為",
+        "【BRI】6️⃣0️⃣邱彰律师",
+        "【BRI】7️⃣7️⃣海外抗战馆重啓",
+        "测试A"
       ],
       "history_dir":".\\history\\group_info\\",
-      "report_to":"briadmin",
+      "report_to":"刘维平",
       "threshold":{
         "comment":"either new members >= 3 or blacklist >= 1",
         "new_member":3,
