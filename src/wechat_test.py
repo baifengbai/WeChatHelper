@@ -2,14 +2,12 @@
 # Written By:   Weiping Liu
 # Created:      Jun 22, 2021
 #
-import sys, os
+import sys, os, time
 from helper.my_logging import *
 from ui.comm import UI_Comm
 from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
 from settings.settings import Settings
-from update_history import Update
-from hooks.new_member import NewMember
 import pywinauto
 
 logger = getMyLogger(__name__, __file__)
@@ -20,10 +18,20 @@ def main():
     win = UI_Comm.connect_wechat()
     if win == None:
         return
+    time.sleep(3)
+    win.set_focus()
+    input('wait')
+    # print('argv:', sys.argv)
+    # Settings.get_settings(os.path.abspath(sys.argv[1]))
+    # logger.info('testing ... %s', 'zhongwen中文')
 
-    print('argv:', sys.argv)
-    Settings.get_settings(os.path.abspath(sys.argv[1]))
-    logger.info('testing ... %s', 'zhongwen中文')
+    # UI_Comm.send_text(search, 'A刘维平A')
+    edit = UI_Chats.click_edit(win)
+    search = UI_Chats.set_focus_search(win)
+    print(search.has_keyboard_focus())
+    print(edit.has_keyboard_focus())
+
+
     # chat_info = UI_ChatInfo.get_chat_info(win)
     # print(chat_info)
     # return

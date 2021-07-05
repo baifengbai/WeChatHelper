@@ -2,7 +2,7 @@
 # Written By:   Weiping Liu
 # Created:      Jun 28, 2021
 #
-import datetime
+import datetime, time
 from helper.my_logging import *
 from ui.comm import UI_Comm
 from ui.chats import UI_Chats
@@ -14,6 +14,48 @@ from helper.utils import Utils
 logger = getMyLogger(__name__)
 
 class Actions:
+    def remove_member(win, settings):
+        logger.info('action: "remove member"')
+        groups = settings['groups']
+        for group in groups:
+            logger.info('group: %s', group)
+            removed = Actions.remove_from_group(win, group, settings['members'])
+            if len(removed) == 0:
+                continue
+            text = ''
+            for m in removed:
+                if text != '':
+                    text += ', '
+                text += '"'+m['name']+'"'
+            text += ' 被移出群聊'
+            Actions.send_text(win, settings['report_to'], text)
+
+    def remove_from_group(win, group_name, members):
+        removed = []
+
+        UI_Chats.click_chats_button(win)
+        UI_Chats.chat_to(win, group_name)
+        UI_ChatInfo.open_chat_info(win)
+        # time.sleep(1)   # wait window open & ready
+        pwin = win.window(title='Chat Info', control_type='Window')
+        button = Actions.find_delete_member_button(pwin)
+        if button == None:
+            logger.warning('did not find "Delete" button')
+            return []
+        UI_Comm.click_control(button)
+        del_member_window = pwin.window(title='DeleteMemberWnd', control_type='Window')
+        ...
+        return removed
+
+    def find_delete_member_button(pwin):
+        # find 'Delete member' button
+        list = pwin.window(title='Members', control_type='List')
+        items = list.children(control_type='ListItem')
+        for item in items:
+            if item.window_text() == 'Delete':
+                return item
+        return None
+
     def welcome_new_member(win, settings):
         logger.info('action: "welcome new member"')
         groups = settings['groups']
