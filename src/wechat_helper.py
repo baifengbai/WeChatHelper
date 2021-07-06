@@ -9,7 +9,6 @@ from settings.settings import Settings
 from actions.actions import Actions
 import pywinauto
 
-
 def main(setting_file):
     logger.info('Using pywinauto version: %s', pywinauto.__version__)
     logger.info('settings from: %s', setting_file)
@@ -24,6 +23,8 @@ def main(setting_file):
 
     # raise window on top
     win.set_focus()
+
+    pywinauto.timings.Timings.fast()
 
     # before doing any action, make sure there is no sub-windows in open,
     # and any special input method not active (cause input problem)

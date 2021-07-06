@@ -3,6 +3,7 @@
 # Created:      Jun 28, 2021
 #
 import datetime, time
+import pywinauto
 from helper.my_logging import *
 from ui.comm import UI_Comm
 from ui.chats import UI_Chats
@@ -39,22 +40,63 @@ class Actions:
 
     def remove_from_group(win, group_name, members):
         removed = []
+        pywinauto.timings.Timings.window_find_timeout = 0.2
+        group_info = Actions.get_group_info(win, group_name)
+        if group_info == None:
+            return removed
 
-        UI_Chats.click_chats_button(win)
-        UI_Chats.chat_to(win, group_name)
-        for member in members:
+        remove = []
+        for m in members:
+            if m['name'] in group_info['members']:
+                remove.append(m)
+
+        for member in remove:
             pwin = UI_ChatInfo.open_chat_info(win)
             if pwin == None:
                 break
-            delete = Actions.find_delete_member_button(pwin)
-            if delete == None:
-                logger.warning('you don\'t have right to remove member')
+
+            dlg = Actions.open_delete_member_dialog(pwin)
+            if dlg == None:
                 continue
-            UI_Comm.click_control(delete)
-            dlg = pwin.window(title='DeleteMemberWnd', control_type='Window')
             if Dlg_DeleteMember.delete_member(dlg, member) == True:
                 removed.append(member)
+            Actions.close_delete_member_dialog(pwin)
         return removed
+
+    def open_delete_member_dialog(pwin):
+        delete = Actions.find_delete_member_button(pwin)
+        if delete == None:
+            logger.warning('you don\'t have right to remove member')
+            return None
+
+        # open 'delete member' dialog
+        title = 'DeleteMemberWnd'
+        retry = 3
+        while retry > 0:
+            retry -= 1
+            time.sleep(0.2)
+            try:
+                dlg = pwin.window(title=title, control_type='Window')
+                if dlg.window_text() == title:
+                    return dlg
+            except pywinauto.findwindows.ElementNotFoundError:
+                UI_Comm.click_control(delete)
+        logger.warning('could not open "delete member dialog"')
+        return None
+
+    def close_delete_member_dialog(pwin):
+        title = 'DeleteMemberWnd'
+        # make sure close 'delete member' dialog
+        retry = 3
+        while retry > 0:
+            retry -= 1
+            time.sleep(0.2)
+            try:
+                dlg = pwin.window(title=title, control_type='Window')
+                if dlg.window_text() == title:
+                    Dlg_DeleteMember.close_dialog(dlg)
+            except pywinauto.findwindows.ElementNotFoundError:
+                break
 
     def find_delete_member_button(pwin):
         # find 'Delete member' button

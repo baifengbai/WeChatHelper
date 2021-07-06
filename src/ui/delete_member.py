@@ -32,11 +32,11 @@ class Dlg_DeleteMember:
         items = Dlg_DeleteMember.get_candidate_items(dlg)
         if len(items) == 0:
             logger.warning('the member does not exist "%s"', member['name'])
-            Dlg_DeleteMember.click_cancel(dlg)
+            Dlg_DeleteMember.close_dialog(dlg)
             return False
         elif len(items) > 1:
             logger.warning('the member id/name not unique')
-            Dlg_DeleteMember.click_cancel(dlg)
+            Dlg_DeleteMember.close_dialog(dlg)
             return False
         selected = Dlg_DeleteMember.get_selected_items(dlg)
         if len(selected) != 1:
@@ -64,8 +64,8 @@ class Dlg_DeleteMember:
         # same name button show up, doo not highlight it
         UI_Comm.click_control(delete, True, False)
 
-    def click_cancel(dlg):
-        button = dlg.window(title='Cancel', control_type='Button')
+    def close_dialog(dlg):
+        button = dlg.window(title='Close', control_type='Button')
         UI_Comm.click_control(button, True, False)
 
     def click_candidate(dlg, item):

@@ -1,17 +1,24 @@
 {
   "actions":{
     "welcome_new_member":{
-        "groups":[
-          "测试A"
-        ],
-        "history_dir":".\\history\\new_member\\",
-        "report_to":"briadmin",
-        "threshold":{
-          "new_member":5
-        },
-        "perform":{
-          "send_text":"【三条群规】：\n1）严禁发放与主题无关的内容。\n2）严禁各类广告。本群只发放BRI大讲堂有关的公益活动广告。\n3）谢绝在群中“乱加”好友，造成对方“被騷擾”。\n只要有二人提出違規，経群主及群管確認，将立即被清理出群。\n敬请大家共同守护并遵循上面群规，感谢大家的积极配合。 "
-        }
+      "groups":[
+        "测试A"
+      ],
+      "history_dir":".\\history\\new_member\\",
+      "report_to":"briadmin",
+      "threshold":{
+        "new_member":5
+      },
+      "perform":{
+        "send_text":"【三条群规】：\n1）严禁发放与主题无关的内容。\n2）严禁各类广告。本群只发放BRI大讲堂有关的公益活动广告。\n3）谢绝在群中“乱加”好友，造成对方“被騷擾”。\n只要有二人提出違規，経群主及群管確認，将立即被清理出群。\n敬请大家共同守护并遵循上面群规，感谢大家的积极配合。 "
       }
+    },
+    "remove_member":{
+      "groups":[
+        "测试A"
+      ],
+      "report_to":"",
+      "comment":"members from Settings['get_move_out']"
     }
+  }
 }
