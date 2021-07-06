@@ -29,6 +29,7 @@ class Settings:
             {'name':'燕献凯 Yan Xiankai'},
             {'name':'相逢一笑', 'id':'XFYXSZ'},
             {'name':'Zheng'},
+            {'name':'陳誠', 'id':'Frank777chan'},
         ]
 
     def get_blacklist():
