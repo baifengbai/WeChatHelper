@@ -6,6 +6,7 @@ import time
 import pywinauto
 from ui.comm import UI_Comm
 from ui.add_member import Dlg_AddMember
+from ui.open_dialog import UI_OpenDialog
 from helper.utils import Utils
 from helper.my_logging import *
 
@@ -15,7 +16,10 @@ class UI_Chats:
     def click_chats_button(win):
         # click "Chats Button"
         button = win.child_window(title=u'Chats', control_type='Button')
-        UI_Comm.click_control(button)
+        if button.exists():
+            UI_Comm.click_control(button)
+            return button
+        return None
 
     def chat_to(win, name):
         # search from chat name list
@@ -64,23 +68,21 @@ class UI_Chats:
             msgs.append({'tag':tag, 'msg':msg})
         return msgs
 
-    def get_chat_name(win):
-        # find chat title and 'chat info' have the same parent
-        share = win.window(title='Chat Info', control_type='Button').parent().parent()
-        pane = share.children(control_type='Pane')[0]
-        pane = pane.children(control_type='Pane')[0]
-        pane = pane.children(control_type='Pane')[1]
-        pane = pane.children(control_type='Pane')[0]
-        ws = pane.children(control_type='Button')
-        if len(ws) == 1:
-            return ws[0].window_text()
-        logger.warning('did not find "title" in chatting window')
-        return None
+    def check_chat_name(win, name):
+        title = win.child_window(title=name, control_type='Button', found_index=0)
+        return title.exists()
+        # except pywinauto.findwindows.ElementAmbiguousError as e:
+        #     n = int(str(e).split()[2])  # "There are 2 elements ...
+        #     for x in range(n):
+        #         print(n, 'buttons')
+        # return True # title.exists()
 
     # click the edit box
     def click_edit(win):
         UI_Chats.click_chats_button(win)
-        edit = win.window(title='Enter', control_type='Edit')
+        edit = win.child_window(title='Enter', control_type='Edit')
+        if not edit.exists():
+            return None
         retry = 3
         while retry > 0:
             UI_Comm.click_control(edit)
@@ -121,7 +123,7 @@ class UI_Chats:
         # wait short time
         wt = 5
         while wt > 0:
-            if UI_Chats.get_chat_name(win) == name:
+            if UI_Chats.check_chat_name(win, name) == True:
                 found = True
                 logger.info('chat to "%s"', name)
                 break
@@ -133,3 +135,21 @@ class UI_Chats:
     def open_chat_info_window(win):
         button = win.window(title='Chat Info', control_type='Button')
         UI_Comm.click_control(button)
+
+    def click_send_file(win):
+        button = win.child_window(title='Send File', control_type='Button')
+        if not button.exists():
+            logger.warning('did not find "Send File" button')
+            return None
+        UI_Comm.click_control(button)
+        return button
+
+    def upload_file(win, filename):
+        logger.info('uploading "%s"', filename)
+        if UI_Chats.click_send_file(win) == None:
+            return False
+        if UI_OpenDialog.open_file(win, filename) == False:
+            return False
+        edit = UI_Chats.click_edit(win)
+        edit.type_keys('{ENTER}')
+        return True

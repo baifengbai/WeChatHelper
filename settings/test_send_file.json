@@ -1,0 +1,12 @@
+{
+  "actions":{
+    "send_file":{
+      "comment":"send all files from specific folder to 'groups'",
+      "groups":[
+        "File Transfer"
+      ],
+      "report_to":"",
+      "folder":".\\outbox"
+    }
+  }
+}

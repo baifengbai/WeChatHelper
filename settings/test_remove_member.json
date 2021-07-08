@@ -1,0 +1,11 @@
+{
+  "actions":{
+    "remove_member":{
+        "groups":[
+          "测试A"
+        ],
+        "report_to":"",
+        "comment":"members from Settings['get_move_out']"
+      }
+    }
+}
