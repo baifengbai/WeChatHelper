@@ -3,12 +3,7 @@
 # Created:      Jun 28, 2021
 #
 import datetime, time
-import pywinauto
 from helper.my_logging import *
-from ui.comm import UI_Comm
-from ui.chats import UI_Chats
-from ui.chat_info import UI_ChatInfo
-from ui.delete_member import Dlg_DeleteMember
 from update_history import History
 from settings.settings import Settings
 from helper.utils import Utils

@@ -2,8 +2,6 @@
 # Written By:   Weiping Liu
 # Created:      Jun 22, 2021
 #
-import time
-import pywinauto
 from ui.comm import UI_Comm
 from helper.my_logging import *
 
@@ -24,6 +22,8 @@ class Dlg_DeleteMember:
         if not edit.has_keyboard_focus():
             logger.warning('failed to put focus on edit')
             return False
+
+        # search with id, or name
         text = member['name']
         if 'id' in member:
             text = member['id']

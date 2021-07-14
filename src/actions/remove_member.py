@@ -2,11 +2,10 @@
 # Written By:   Weiping Liu
 # Created:      Jun 28, 2021
 #
-import datetime, time
+import time
 import pywinauto
 from helper.my_logging import *
 from ui.comm import UI_Comm
-from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
 from ui.delete_member import Dlg_DeleteMember
 from update_history import History
@@ -78,7 +77,7 @@ class Action_RemoveMember:
             time.sleep(0.2)
             try:
                 dlg = pwin.window(title=title, control_type='Window')
-                if dlg.window_text() == title:
+                if dlg.exists():
                     return dlg
             except pywinauto.findwindows.ElementNotFoundError:
                 UI_Comm.click_control(delete)
@@ -87,6 +86,7 @@ class Action_RemoveMember:
 
     def close_delete_member_dialog(pwin):
         title = 'DeleteMemberWnd'
+        r = False
         # make sure close 'delete member' dialog
         retry = 3
         while retry > 0:
@@ -94,10 +94,16 @@ class Action_RemoveMember:
             time.sleep(0.2)
             try:
                 dlg = pwin.window(title=title, control_type='Window')
-                if dlg.window_text() == title:
-                    Dlg_DeleteMember.close_dialog(dlg)
+                if not dlg.exists():
+                    r = True
+                    break
+                Dlg_DeleteMember.close_dialog(dlg)
             except pywinauto.findwindows.ElementNotFoundError:
+                r = True
                 break
+        if r == False:
+            logger.warning('failed to close "%s" dialog', title)
+        return r
 
     def find_delete_member_button(pwin):
         # find 'Delete member' button

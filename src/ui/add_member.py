@@ -2,8 +2,6 @@
 # Written By:   Weiping Liu
 # Created:      Jun 22, 2021
 #
-import time
-import pywinauto
 from ui.comm import UI_Comm
 from helper.my_logging import *
 

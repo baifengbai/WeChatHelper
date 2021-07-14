@@ -2,15 +2,11 @@
 # Written By:   Weiping Liu
 # Created:      Jul 6, 2021
 #
-import datetime, time, os
-import pywinauto
+import time, os
 from helper.my_logging import *
-from ui.comm import UI_Comm
 from ui.chats import UI_Chats
-from ui.chat_info import UI_ChatInfo
 from settings.settings import Settings
 from helper.utils import Utils
-from actions.helper import Action_Helper
 
 logger = getMyLogger(__name__)
 

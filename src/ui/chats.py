@@ -68,14 +68,58 @@ class UI_Chats:
             msgs.append({'tag':tag, 'msg':msg})
         return msgs
 
-    def check_chat_name(win, name):
-        title = win.child_window(title=name, control_type='Button', found_index=0)
-        return title.exists()
-        # except pywinauto.findwindows.ElementAmbiguousError as e:
-        #     n = int(str(e).split()[2])  # "There are 2 elements ...
-        #     for x in range(n):
-        #         print(n, 'buttons')
-        # return True # title.exists()
+    def get_title_button(win):
+        # find title button at (334, 22)
+        logger.debug('search title')
+        index = 0
+        try:
+            while True:
+                button = win.child_window(control_type='Button', found_index=index)
+                position = button.rectangle().top - win.rectangle().top
+                if position <= 22:    # title button position from top window
+                    button.draw_outline()
+                    logger.debug('found title')
+                    return button
+                index += 1
+        except pywinauto.findwindows.ElementNotFoundError:
+            logger.error('did not find chat title button')
+        return None
+
+    def search_name(win, name):
+        logger.info('search group name "%s"', name)
+        search = UI_Chats.set_focus_search(win)
+        # entering [name] in edit box, then 'Enter'
+        UI_Comm.send_text(search, name, False)
+
+        time.sleep(1)   # wait to get searh results
+
+        # check if there is the name in search results
+        # if yes, click and return True
+        list = win.child_window(title='Search Results', control_type='List')
+        if list.exists():
+            items = list.children()
+            group = False
+            for item in items:
+                if item.window_text() == '':
+                    texts = item.children_texts()
+                    if len(texts) == 0:
+                        continue
+                    if texts[0] == 'Group Chats' or texts[0] == 'Contacts':
+                        group = True
+                    else:
+                        group = False
+                else:
+                    if group:
+                        if item.window_text() == name:
+                            UI_Comm.click_control(item)
+                            logger.debug('found "%s"', name)
+                            break
+
+        button = UI_Chats.get_title_button(win)
+        if button and button.window_text() == name:
+            return True
+        logger.warning('did not find named group "%s"', name)
+        return False
 
     # click the edit box
     def click_edit(win):
@@ -111,26 +155,6 @@ class UI_Chats:
             logger.warning('failed set focus on "search"')
             raise Error
         return search
-
-    # in chats window, using 'search' to find name
-    def search_name(win, name):
-        search = UI_Chats.set_focus_search(win)
-        # entering [name] in edit box, then 'Enter'
-        UI_Comm.send_text(search, name)
-
-        # check if we see chat 'title' turn to the name
-        found = False
-        # wait short time
-        wt = 5
-        while wt > 0:
-            if UI_Chats.check_chat_name(win, name) == True:
-                found = True
-                logger.info('chat to "%s"', name)
-                break
-            wt -= 1
-            time.sleep(0.2)
-            search.type_keys('{ENTER}')
-        return found
 
     def open_chat_info_window(win):
         button = win.window(title='Chat Info', control_type='Button')

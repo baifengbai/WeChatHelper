@@ -3,11 +3,7 @@
 # Created:      Jun 22, 2021
 #
 import time
-from ui.comm import UI_Comm
-import pywinauto
 from helper.utils import Utils
-from ui.chats import UI_Chats
-from ui.chat_info import UI_ChatInfo
 from settings.settings import Settings
 from helper.my_logging import *
 
