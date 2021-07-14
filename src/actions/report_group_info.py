@@ -3,12 +3,7 @@
 # Created:      Jun 28, 2021
 #
 import datetime, time
-import pywinauto
 from helper.my_logging import *
-from ui.comm import UI_Comm
-from ui.chats import UI_Chats
-from ui.chat_info import UI_ChatInfo
-from ui.delete_member import Dlg_DeleteMember
 from update_history import History
 from settings.settings import Settings
 from helper.utils import Utils
@@ -50,6 +45,11 @@ class Action_ReportGroupInfo:
             group_info['blacklist'] = black_members
             group_info['moveout'] = moveout_members
             Action_ReportGroupInfo.report_info(win, settings['report_to'], group_info)
+
+            if os.path.exists(filename) and 'date' in history:
+                ds = history['date'].replace(' ', '_').replace(':', '')
+                oldfile = settings['history_dir']+'h_'+group+'_'+ds+'.json'
+                os.rename(filename, oldfile)
 
             logger.info(u'updating group info: %s', group)
             history['members'] = group_info['members']
