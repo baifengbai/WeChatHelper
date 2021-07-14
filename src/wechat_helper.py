@@ -10,6 +10,7 @@ from actions.report_group_info import Action_ReportGroupInfo
 from actions.welcome_new_member import Action_WelcomeNewMember
 from actions.remove_member import Action_RemoveMember
 from actions.send_file import Action_SendFile
+from actions.invite_friends import Action_InviteFriends
 import pywinauto
 
 def main(setting_file):
@@ -42,6 +43,9 @@ def main(setting_file):
         Action_RemoveMember.remove_member(win, actions['remove_member'])
     if 'send_file' in actions:
         Action_SendFile.send_file(win, actions['send_file'])
+    if 'invite_friends' in actions:
+        Action_InviteFriends.invite_friends(win, actions['invite_friends'])
+
     logger.info('no more actions')
     # update_history()
     # accept_new_friends(win)
