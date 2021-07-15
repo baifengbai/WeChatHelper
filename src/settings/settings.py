@@ -30,6 +30,25 @@ class Settings:
             {'name':'相逢一笑', 'id':'XFYXSZ'},
             {'name':'Zheng'},
             {'name':'陳誠', 'id':'Frank777chan'},
+            {'name':'梦柳', 'id':'Worter02'},      # 机票
+            {'name':'Frank Chan'},
+            {'name':'chike wu'},
+            {'name':'雪山'},      # 机票
+            {'name':'Gonzalez'},
+            {'name':'Zhang Cruise'},
+            {'name':'good engineer'},
+            {'name':'goodengineer27'},
+            {'name':'缘起缘落'},
+            {'name':'杰弗裡·雲鵬'},
+            {'name':'能力強'},
+            {'name':'宋仲基'},
+            {'name':'Chan Raymond'},
+            {'name':'奥尔特加'},
+            {'name':'張忠'},
+            {'name':'华丽国际（中国🇨🇳邮寄海外）','id':'Cai992110'},
+            {'name':'何清茉'},
+            {'name':'Surge'},
+            {'name':'徐欣雨'}
         ]
 
     def get_blacklist():
@@ -38,25 +57,17 @@ class Settings:
             {'name':'DAL小仙女'},    # AB Testing！AB测试
             {'name':'张亮'},         # 业办理...★毕业证＋成绩单...
             {'name':'Zhang'},       # 加朋友
-            {'name':'good engineer'},
-            {'name':'goodengineer27'},
             {'name':'engr20199806'},
             {'name':'Wang'},
-            {'name':'奥尔特加'},
             {'name':'程。。'},
-            {'name':'缘起缘落'},
             {'name':'Zhang Owen'},
-            {'name':'杰弗裡·雲鵬'},
-            {'name':'chike wu'},
-            {'name':'Gonzalez'},
-            {'name':'Chan Raymond'},
-            {'name':'能力強'},
-            {'name':'張忠'},
-            {'name':'宋仲基'},
-            {'name':'Zhang Cruise'},
-            {'name':'Frank Chan'},
             {'name':'Lynn 陳'},
             {'name':'太棒了'},
             {'name':'Alin'},
+            {'name':'Yong'},
+            {'name':'金马克博士'},
+            {'name':'Alex Nguyen'},
+            {'name':''},
+            {'name':''},
             # {'name':'', 'id':''},
         ]
