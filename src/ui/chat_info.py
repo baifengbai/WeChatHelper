@@ -62,12 +62,12 @@ class UI_ChatInfo:
             #   AddMemberWnd(Window) - Close/Cancel(Button)
             #   DeleteMemberWnd(Window) - Close/Cancel(Button)
             #   WeChat(Window) for Group Notice - Close(Button)
-            subw = pwin.child_window(control_type='Window' found_index=0)
+            subw = pwin.child_window(control_type='Window', found_index=0)
             while subw.exists():
                 close = subw.child_window(title='Close', control_type='Button')
                 if close.exists():
                     UI_Comm.click_conotrol(close)
-                subw = pwin.child_window(control_type='Window' found_index=0)
+                subw = pwin.child_window(control_type='Window', found_index=0)
         logger.warning('failed to close "Chat Info" window')
         return False
 
