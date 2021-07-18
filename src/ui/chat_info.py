@@ -36,26 +36,40 @@ class UI_ChatInfo:
         if pwin.exists():
             return pwin
 
-        button = win.window(title=title, control_type='Button')
-        UI_Comm.click_control(button)
+        retry = 3
+        while retry > 0:
+            retry -= 1
+            button = win.window(title=title, control_type='Button')
+            UI_Comm.click_control(button)
 
-        pwin = win.window(title=title, control_type='Window')
-        if pwin.exists():
-            return pwin
+            pwin = win.window(title=title, control_type='Window')
+            if pwin.exists():
+                return pwin
 
-        logger.error('failed open "%s" window', title)
+        logger.error('failed to open "%s" window', title)
         return None
 
     def close_chat_info(win):
+        UI_Chats.click_edit(win)
         retry = 3
         while retry > 0:
             retry -= 1
             pwin = win.window(title='Chat Info', control_type='Window')
             if not pwin.exists():
                 return True
-            UI_Chats.click_edit(win)
-            logger.warning('failed to close "Chat Info" window')
-            return False
+
+            # possible another window is openning:
+            #   AddMemberWnd(Window) - Close/Cancel(Button)
+            #   DeleteMemberWnd(Window) - Close/Cancel(Button)
+            #   WeChat(Window) for Group Notice - Close(Button)
+            subw = pwin.child_window(control_type='Window' found_index=0)
+            while subw.exists():
+                close = subw.child_window(title='Close', control_type='Button')
+                if close.exists():
+                    UI_Comm.click_conotrol(close)
+                subw = pwin.child_window(control_type='Window' found_index=0)
+        logger.warning('failed to close "Chat Info" window')
+        return False
 
     def view_more(pwin):
         # in case of less member, there is no 'View More Members'

@@ -11,6 +11,7 @@ from actions.welcome_new_member import Action_WelcomeNewMember
 from actions.remove_member import Action_RemoveMember
 from actions.send_file import Action_SendFile
 from actions.invite_friends import Action_InviteFriends
+from actions.list_group_members import Action_ListGroupMembers
 import pywinauto
 
 def main(setting_file):
@@ -45,6 +46,8 @@ def main(setting_file):
         Action_SendFile.send_file(win, actions['send_file'])
     if 'invite_friends' in actions:
         Action_InviteFriends.invite_friends(win, actions['invite_friends'])
+    if 'list_group_members' in actions:
+        Action_ListGroupMembers.list_group_members(win, actions['list_group_members'])
 
     logger.info('no more actions')
     # update_history()
