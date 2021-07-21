@@ -10,6 +10,9 @@ from settings.settings import Settings
 from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
 from ui.comm import UI_Comm
+from ui.wechat_pane import UI_WeChatPane
+from ui.user import UI_User
+from member_info import Members
 
 logger = getMyLogger(__name__)
 
@@ -18,9 +21,18 @@ class Action_ListGroupMembers:
         logger.info('action: "list_group_members"')
         groups = settings['groups']
         for group in groups:
-            Action_ListGroupMembers.list_members(win, group, settings['report_dir'])
+            members = Action_ListGroupMembers.list_members(win, group)
+            if 'update_member' in settings and settings['update_member'] == True:
+                user_info = UI_User.get_user_info(win)
+                member_data = Members(user_info)
+                for m in members:
+                    m['groups'] = [group]
+                    member_data.update_member(m)
 
-    def list_members(win, group, report_dir):
+            filename = settings['report_dir'] + group + '.json'
+            Utils.to_json_file(members, filename)
+
+    def list_members(win, group):
         if UI_Chats.chat_to(win, group) != True:
             return
         pwin = UI_ChatInfo.open_chat_info(win)
@@ -54,39 +66,9 @@ class Action_ListGroupMembers:
                 # if len(member_info) > 3:
                 #     break
         UI_ChatInfo.close_chat_info(win)
-
-        filename = report_dir + group + '.json'
-        Utils.to_json_file(member_info, filename)
+        return member_info
 
     def get_member_info(win, member):
         # open member card
         UI_Comm.click_control(member)
-
-        pane = win.child_window(title='WeChat', control_type='Pane')
-        if not pane.exists():
-            logger.warning('did not find member card pane')
-            return None
-        # pane.print_control_identifiers(filename='id.tex')
-
-        # get number of TEXT controls
-        n = 1
-        try:
-            fields = pane.child_window(control_type='Text')
-            fields.exists()
-        except pywinauto.findwindows.ElementAmbiguousError as e:
-            n = int(str(e).split()[2])         # There are N elements
-
-        name = pane.child_window(control_type='Edit', found_index=0)
-        info = {'name': name.window_text()}
-
-        for index in range(n):
-            field = pane.child_window(control_type='Text', found_index=index)
-            if not field.exists():
-                break
-            name = field.window_text()
-            if name != '':
-                value = field.parent().children()[1].window_text()
-                info[name.replace(' ', '').replace(':', '')] = value
-
-        pane.type_keys('{ESC}')     # close popup card
-        return info
+        return UI_WeChatPane.get_member_info(win)

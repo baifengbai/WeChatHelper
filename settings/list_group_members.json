@@ -2,10 +2,10 @@
   "actions":{
     "list_group_members":{
       "groups":[
-        "【BRI】5️⃣6️⃣沈悅-華裔有為",
         "【BRI】5️⃣7️⃣Regina华裔有為"
       ],
-      "report_dir":".\\history\\group_members\\"
+      "report_dir":".\\history\\group_members\\",
+      "update_member":true
     }
   }
 }

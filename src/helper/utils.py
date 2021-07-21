@@ -4,6 +4,10 @@
 #
 import datetime
 import json, os
+import imagehash
+from helper.my_logging import *
+
+logger = getMyLogger(__name__)
 
 class Utils:
     # stime time string to be converted:
@@ -37,11 +41,15 @@ class Utils:
         tt = datetime.datetime.strptime(t, '%m-%d-%y %I:%M %p')
         return tt.strftime('%Y-%m-%d %H:%M')
 
+    def get_time_now():
+        return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
     # write object to json file
     def to_json_file(obj, filename):
         if not os.path.exists(os.path.dirname(filename)):
             os.makedirs(os.path.dirname(filename))
 
+        logger.info('write json to "%s"', filename)
         with open(filename, 'w', encoding='utf8') as jfile:
             json.dump(obj, jfile, indent=2, ensure_ascii=False)
 
@@ -49,6 +57,7 @@ class Utils:
     def from_json_file(filename):
         if os.path.exists(filename) == False:
             return None
+        logger.info('read json from "%s"', filename)
         with open(filename, 'r', encoding='utf8') as jfile:
             obj = json.load(jfile)
             return obj
@@ -65,6 +74,10 @@ class Utils:
             else:
                 parsed += c
         return parsed
+
+    def get_img_key(img):
+        key = imagehash.average_hash(img)
+        return str(key)
 
 if __name__ == '__main__':
     # print(Utils.format_time_tag('6-20-21 7:40 PM'))

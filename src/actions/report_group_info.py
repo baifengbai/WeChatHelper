@@ -54,7 +54,7 @@ class Action_ReportGroupInfo:
             logger.info(u'updating group info: %s', group)
             history['members'] = group_info['members']
             history['name'] = group
-            history['date'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            history['date'] = Utils.get_time_now()
             History.write_history(history, filename)
 
     def report_info(win, name, group_info):

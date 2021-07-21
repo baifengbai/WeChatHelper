@@ -42,7 +42,7 @@ class Action_WelcomeNewMember:
             logger.info(u'updating group info: %s', group)
             history['members'] = group_info['members']
             history['name'] = group
-            history['date'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            history['date'] = Utils.get_time_now()
             History.write_history(history, filename)
 
             if 'send_text' in settings['perform']:

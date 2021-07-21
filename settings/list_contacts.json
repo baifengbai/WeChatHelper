@@ -1,0 +1,7 @@
+{
+  "actions":{
+    "list_contacts":{
+      "report_dir":".\\history\\group_members\\"
+    }
+  }
+}
