@@ -15,6 +15,41 @@ logger = getMyLogger(__name__)
 # this is a popup window in case of click member in group member listing
 class UI_WeChatPane:
     def get_member_info(win):
+        time.sleep(0.5)   # let window popup ready
+        pane = win.child_window(title='WeChat', control_type='Pane')
+        if not pane.exists():
+            logger.warning('did not find member card pane')
+            return None
+        # pane.print_control_identifiers(filename='id.txt')
+
+        info = {}
+        pane4c = pane.children()[1].children()[0].children()
+        pane5c = pane4c[0].children()
+        pane6c = pane5c[0].children()
+        info['name'] = pane6c[0].children()[0].window_text()
+
+        if len(pane6c) > 1:
+            pane8c = pane6c[1].children()
+            id_name = pane8c[0].window_text()
+            id_value = pane8c[1].window_text()
+            info[id_name.replace(' ','').replace(':','')] = id_value
+
+        img = pane5c[1].capture_as_image()
+        info['img'] = img
+
+        pane10c = pane4c[2].children()
+        for c in pane10c:
+            item = c.children()
+            n = item[0].window_text()
+            v = item[1].window_text()
+            info[n] = v
+
+        pane.type_keys('{ESC}')     # close popup card
+        print(info)
+        return info
+
+    # following version runs much slower
+    def get_member_info_0(win):
         pane = win.child_window(title='WeChat', control_type='Pane')
         if not pane.exists():
             logger.warning('did not find member card pane')

@@ -7,6 +7,7 @@ from helper.my_logging import *
 from ui.comm import UI_Comm
 from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
+from ui.user import UI_User
 from settings.settings import Settings
 import pywinauto
 
@@ -18,8 +19,8 @@ def main():
     win = UI_Comm.connect_wechat()
     if win == None:
         return
-    time.sleep(3)
-    win.set_focus()
+
+    print(UI_User.get_user_info(win))
     input('wait')
     # print('argv:', sys.argv)
     # Settings.get_settings(os.path.abspath(sys.argv[1]))
