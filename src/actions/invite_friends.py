@@ -75,9 +75,12 @@ class Action_InviteFriends:
                 UI_Comm.mouse_scroll(pwin, 1)
                 m_rect = member.rectangle()
 
-            info = member_data.find_info(UI_WeChatPane.get_member_info(win, members[index]))
+            info = UI_WeChatPane.get_member_info(win, members[index])
             if info == None:
-                return False
+                continue
+            info = member_data.find_info(info)
+            if info == None:
+                continue
             if not 'WeChatID' in info and not 'invited' in info:
                 break
         if retry == 0:
