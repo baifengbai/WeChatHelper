@@ -63,7 +63,7 @@ class Action_InviteFriends:
         retry = len(members)
         while retry > 0:
             retry -= 1
-            index = random.randint(0, len(members))
+            index = random.randint(2, len(members)-2)   # + and -
             logger.info('random member: %d', index)
             # scroll into view
             member = members[index]
