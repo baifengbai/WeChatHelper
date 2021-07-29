@@ -40,10 +40,7 @@ class Action_InviteFriends:
             limit = int(settings['limit'])
 
         for n in range(limit):
-            logger.info('invite: %d', n)
-            info = Action_InviteFriends.invite(win, member_data, text)
-            if info != None and 'invited' in info:
-                member_data.update_member(info)
+            Action_InviteFriends.invite(win, member_data, text)
 
     def invite(win, member_data, text):
         pwin = UI_ChatInfo.open_chat_info(win)
@@ -60,13 +57,12 @@ class Action_InviteFriends:
         #   1. is not a friend
         #   2. was not invited
         info = None
-        retry = len(members)
-        while retry > 0:
-            retry -= 1
-            index = random.randint(2, len(members)-2)   # + and -
-            logger.info('random member: %d', index)
-            # scroll into view
-            member = members[index]
+        for member in members:
+            if member.window_text() == 'Add':
+                continue
+            if member.window_text() == 'Delete':
+                continue
+
             m_rect = member.rectangle()
             while m_rect.bottom > rect.bottom:
                 UI_Comm.mouse_scroll(pwin, -1)     # scroll content up
@@ -81,16 +77,13 @@ class Action_InviteFriends:
             info = member_data.find_info(info)
             if info == None:
                 continue
-            if not 'WeChatID' in info and not 'invited' in info:
-                break
-        if retry == 0:
-            logger.warning('did not find member to invite')
-            return False
+            if 'WeChatID' in info or 'invited' in info:
+                continue
 
-        # print(info)
-        if Action_InviteFriends.invite_member(win, member, text):
-            info['invited'] = Utils.get_time_now()
-            member_data.update_member(info)
+            msg = Action_InviteFriends.invite_member(win, member, text)
+            if msg != False:
+                info['invited'] = Utils.get_time_now() + ' ' + msg
+                member_data.update_member(info)
 
         UI_ChatInfo.close_chat_info(win)
 
@@ -164,7 +157,7 @@ class Action_InviteFriends:
             button.draw_outline()
             UI_Comm.click_control(button, True, False)
             logger.info('confirmed sent')
-            return True
+            return msg
         logger.warning('no confirm sent')
         return False
 
