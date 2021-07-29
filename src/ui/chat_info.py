@@ -79,6 +79,17 @@ class UI_ChatInfo:
         if view_more.exists():
             UI_Comm.click_control(view_more, True, False)
 
+    def scroll_in_view(list, member):
+        rect = list.parent().rectangle()
+        m_rect = member.rectangle()
+
+        while m_rect.bottom > rect.bottom:
+            UI_Comm.mouse_scroll(pwin, -1)     # scroll content up
+            m_rect = member.rectangle()
+        while m_rect.top < rect.top:
+            UI_Comm.mouse_scroll(pwin, 1)
+            m_rect = member.rectangle()
+
     def get_members(pwin):
         # view more suppose to list ALL members
         UI_ChatInfo.view_more(pwin)

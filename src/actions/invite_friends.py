@@ -39,17 +39,17 @@ class Action_InviteFriends:
         if 'limit' in settings:
             limit = int(settings['limit'])
 
-        Action_InviteFriends.invite(win, member_data, limit, text)
+        for i in range(linit):
+            Action_InviteFriends.invite(win, member_data, text)
 
-    def invite(win, member_data, limit, text):
+    def invite(win, member_data, text):
         pwin = UI_ChatInfo.open_chat_info(win)
         if pwin == None:
             return None
         UI_ChatInfo.view_more(pwin)
 
-        # pick random member from list
-        rect = pwin.rectangle()
         list = pwin.window(title='Members', control_type='List')
+        rect = list.parent().rectangle()
         members = list.children(control_type='ListItem')
 
         # pick a member to be invited
@@ -62,13 +62,7 @@ class Action_InviteFriends:
             if member.window_text() == 'Delete':
                 continue
 
-            m_rect = member.rectangle()
-            while m_rect.bottom > rect.bottom:
-                UI_Comm.mouse_scroll(pwin, -1)     # scroll content up
-                m_rect = member.rectangle()
-            while m_rect.top < rect.top:
-                UI_Comm.mouse_scroll(pwin, 1)
-                m_rect = member.rectangle()
+            UI_ChatInfo.scroll_in_view(list, member)
 
             info = UI_WeChatPane.get_member_info(win, member)
             if info == None:
@@ -83,10 +77,6 @@ class Action_InviteFriends:
             if msg != False:
                 info['invited'] = Utils.get_time_now() + ' ' + msg
                 member_data.update_member(info)
-                limit -= 1
-                if limit == 0:
-                    break
-
         UI_ChatInfo.close_chat_info(win)
 
     # return None for failed invite or
