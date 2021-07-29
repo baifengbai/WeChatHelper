@@ -39,10 +39,9 @@ class Action_InviteFriends:
         if 'limit' in settings:
             limit = int(settings['limit'])
 
-        for n in range(limit):
-            Action_InviteFriends.invite(win, member_data, text)
+        Action_InviteFriends.invite(win, member_data, limit, text)
 
-    def invite(win, member_data, text):
+    def invite(win, member_data, limit, text):
         pwin = UI_ChatInfo.open_chat_info(win)
         if pwin == None:
             return None
@@ -71,7 +70,7 @@ class Action_InviteFriends:
                 UI_Comm.mouse_scroll(pwin, 1)
                 m_rect = member.rectangle()
 
-            info = UI_WeChatPane.get_member_info(win, members[index])
+            info = UI_WeChatPane.get_member_info(win, member)
             if info == None:
                 continue
             info = member_data.find_info(info)
@@ -84,6 +83,9 @@ class Action_InviteFriends:
             if msg != False:
                 info['invited'] = Utils.get_time_now() + ' ' + msg
                 member_data.update_member(info)
+                limit -= 1
+                if limit == 0:
+                    break
 
         UI_ChatInfo.close_chat_info(win)
 
