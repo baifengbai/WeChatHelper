@@ -70,7 +70,7 @@ class Members:
             if not x in merged:
                 merged[x] = info[x]
                 continue
-            if x in ['name', 'WeChatID', 'From', 'Region', 'Alias', 'Group Alias']:
+            if x in ['name', 'WeChatID', 'From', 'Region', 'Alias', 'Group Alias', 'Tag']:
                 merged[x] = info[x]
                 continue
             if x in ['update', 'imgfile']:
