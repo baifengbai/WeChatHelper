@@ -159,7 +159,7 @@ class Action_InviteFriends:
             button = tip.child_window(title='OK', control_type='Button')
             if not button.exists():
                 continue
-            msg = tip.child_window(control_type='Edit', found_index=0)
+            msg = tip.child_window(control_type='Edit', found_index=0).window_text()
             logger.info('"%s"', msg)
             button.draw_outline()
             UI_Comm.click_control(button, True, False)
