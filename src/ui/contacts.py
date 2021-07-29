@@ -19,11 +19,18 @@ class UI_Contacts:
         if button.exists():
             UI_Comm.click_control(button)
             return button
+        logger.warning('did not find "Contacts" button')
         return None
 
+    def get_contacts_list(win):
+        list = win.child_window(title='Contacts', control_type='List')
+        if list.exists() == False:
+            logger.warning('did not find "Contacts" button')
+            return None
+        return list
 
     def get_contacts(win):
-        list = win.child_window(title='Contacts', control_type='List')
+        list = UI_Contacts.get_contacts_list(win)
         UI_Comm.click_control(list)
         # goto top of the list
         list.type_keys('^{HOME}')
@@ -32,7 +39,7 @@ class UI_Contacts:
         last_info = {}
         limit = 5
         while limit > 0:
-            limit -= 1
+            # limit -= 1
             info = UI_Contacts.get_contact_info(win)
             if info != None:
                 if info == last_info:

@@ -70,7 +70,7 @@ class Members:
             if not x in merged:
                 merged[x] = info[x]
                 continue
-            if x in ['name', 'WeChatID', 'From', 'Region', 'Alias']:
+            if x in ['name', 'WeChatID', 'From', 'Region', 'Alias', 'Group Alias']:
                 merged[x] = info[x]
                 continue
             if x in ['update', 'imgfile']:
@@ -86,6 +86,18 @@ class Members:
             if not v in merged[key]:
                 merged[key].append(v)
         return merged
+
+    def find_info(self, info):
+        merged = None
+        for i in range(len(self.data)):
+            if self.data[i] == None:
+                logger.error('data error')
+            if info == None:
+                logger.error('info error')
+            if self.is_same_member(self.data[i], info) == 'y':
+                merged = self.merge_info(self.data[i], info)
+                return merged
+        return info
 
     def is_same_member(self, m1, m2):
         key = 'WeChatID'

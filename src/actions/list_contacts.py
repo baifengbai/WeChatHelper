@@ -23,7 +23,7 @@ class Action_ListContacts:
             return
 
         contacts = UI_Contacts.get_contacts(win)
-        print('contacts:', len(contacts))
+        # print('contacts:', len(contacts))
 
         member_data = Members(user_info)
         for m in contacts:

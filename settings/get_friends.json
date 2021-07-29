@@ -1,0 +1,9 @@
+{
+  "actions":{
+    "get_friends":{
+      "tags":[
+          "No tag"
+      ]
+    }
+  }
+}

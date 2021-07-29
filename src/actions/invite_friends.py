@@ -2,75 +2,107 @@
 # Written By:   Weiping Liu
 # Created:      Jun 28, 2021
 #
-import datetime, time
+import datetime, time, random
 from helper.my_logging import *
+from helper.utils import Utils
 from settings.settings import Settings
 from ui.chats import UI_Chats
 from ui.chat_info import UI_ChatInfo
 from ui.comm import UI_Comm
+from ui.user import UI_User
+from ui.wechat_pane import UI_WeChatPane
+from member_info import Members
 
 logger = getMyLogger(__name__)
 
+'''
+    从指定的群组邀请朋友
+        随机抽取群里的朋友，邀请限定数量：limit", Default=10
+        邀请发出后会在data/USER/members.json作标记 invited:datetime
+'''
 class Action_InviteFriends:
     def invite_friends(win, settings):
         logger.info('action: "invite_friends"')
+
+        user_info = UI_User.get_user_info(win)
+        if user_info == None:
+            return
+        member_data = Members(user_info)
+
         group = settings['from_group']
         if UI_Chats.chat_to(win, group) != True:
             return
 
-        # default, not dry run
-        dryrun = False
-        if 'dryrun' in settings:
-            dryrun = settings['dryrun']
-
         text = settings['invite_text']
 
-        for name in settings['friends']:
-            Action_InviteFriends.invite(win, name, text, dryrun)
-            # WeChat does not allow a lot operation in short time
-            # delay enough time
-            time.sleep(10)
+        limit = 10  # default
+        if 'limit' in settings:
+            limit = int(settings['limit'])
 
-    def slow_down_click(control, center=True, outline=True):
-        time.sleep(5)
-        UI_Comm.click_control(control, center, outline)
+        for n in range(limit):
+            logger.info('invite: %d', n)
+            info = Action_InviteFriends.invite(win, member_data, text)
+            if info != None and 'invited' in info:
+                member_data.update_member(info)
 
-    def invite(win, name, text, dryrun):
-        logger.info('invite "%s"', name)
+    def invite(win, member_data, text):
         pwin = UI_ChatInfo.open_chat_info(win)
         if pwin == None:
-            return
+            return None
         UI_ChatInfo.view_more(pwin)
 
+        # pick random member from list
         rect = pwin.rectangle()
         list = pwin.window(title='Members', control_type='List')
         members = list.children(control_type='ListItem')
-        for index in range(len(members)):
-            # find the name
-            if members[index].window_text() != name:
-                continue
 
+        # pick a member to be invited
+        #   1. is not a friend
+        #   2. was not invited
+        info = None
+        retry = len(members)
+        while retry > 0:
+            retry -= 1
+            index = random.randint(0, len(members))
+            logger.info('random member: %d', index)
             # scroll into view
-            while members[index].rectangle().bottom > rect.bottom:
+            member = members[index]
+            m_rect = member.rectangle()
+            while m_rect.bottom > rect.bottom:
                 UI_Comm.mouse_scroll(pwin, -1)     # scroll content up
-                # time.sleep(0.1)
+                m_rect = member.rectangle()
+            while m_rect.top < rect.top:
+                UI_Comm.mouse_scroll(pwin, 1)
+                m_rect = member.rectangle()
 
-            Action_InviteFriends.invite_member(win, members[index], text, dryrun)
-            break
+            info = member_data.find_info(UI_WeChatPane.get_member_info(win, members[index]))
+            if info == None:
+                return False
+            if not 'WeChatID' in info and not 'invited' in info:
+                break
+        if retry == 0:
+            logger.warning('did not find member to invite')
+            return False
+
+        # print(info)
+        if Action_InviteFriends.invite_member(win, member, text):
+            info['invited'] = Utils.get_time_now()
+            member_data.update_member(info)
+
         UI_ChatInfo.close_chat_info(win)
 
     # return None for failed invite or
     # msg text for invited
-    def invite_member(win, member, text, dryrun):
+    def invite_member(win, member, text):
         name = member.window_text()
         member.draw_outline()
         # click the member icon to open
-        Action_InviteFriends.slow_down_click(member)
+        UI_Comm.click_control(member)
         pane = win.child_window(title='WeChat', control_type='Pane')
         if not pane.exists():
             logger.warning('could not open friend "%s"', name)
             pane.type_keys('{ESC}')
-            return
+            return False
 
         # if member is already a friend, WeChat ID will be shown
         # otherwise, 'Add as friend' button should be there.
@@ -81,12 +113,12 @@ class Action_InviteFriends:
             else:
                 logger.warning('could not add friend "%s"', name)
             pane.type_keys('{ESC}')
-            return
+            return False
 
-        Action_InviteFriends.slow_down_click(add, True, False)
-        Action_InviteFriends.add_friend(win, text, dryrun)
+        UI_Comm.click_control(add)
+        return Action_InviteFriends.add_friend(win, text)
 
-    def add_friend(win, text, dryrun):
+    def add_friend(win, text):
         retry = 3
         while retry > 0:
             request = win.child_window(title='WeChat', control_type='Window')
@@ -97,28 +129,20 @@ class Action_InviteFriends:
 
         if not request.exists():
             logger.info('did not see request dialog')
-            return
+            return False
 
         if not request.child_window(title='Add Friends', control_type='Text').exists():
             if request.child_window(title='Tip', control_type='Text').exists():
-                Action_InviteFriends.confirm_sent(win)
-                return
+                return Action_InviteFriends.confirm_sent(win)
 
         edit = request.child_window(control_type='Edit', found_index=0)
-        Action_InviteFriends.slow_down_click(edit)
+        UI_Comm.click_control(edit)
         edit.type_keys('^a{BACKSPACE}')
         UI_Comm.send_text(edit, text, False)
-        msg = edit.get_value()
-        # close
-        if dryrun:
-            title = 'Cancel'
-        else:
-            title = 'OK'
-        button = request.child_window(title=title, control_type='Button')
+        button = request.child_window(title='OK', control_type='Button')
         button.draw_outline()
-        Action_InviteFriends.slow_down_click(button, True, False)
-        Action_InviteFriends.confirm_sent(win)
-        return
+        UI_Comm.click_control(button, True, False)
+        return Action_InviteFriends.confirm_sent(win)
 
     def confirm_sent(win):
         retry = 3
@@ -132,12 +156,14 @@ class Action_InviteFriends:
             button = tip.child_window(title='OK', control_type='Button')
             if not button.exists():
                 continue
+            msg = tip.child_window(control_type='Edit', found_index=0)
+            logger.info('"%s"', msg)
             button.draw_outline()
-            Action_InviteFriends.slow_down_click(button, True, False)
+            UI_Comm.click_control(button, True, False)
             logger.info('confirmed sent')
-            return
+            return True
         logger.warning('no confirm sent')
-        return
+        return False
 
 '''
 -- already friend

@@ -27,6 +27,7 @@ class Action_ListGroupMembers:
                 member_data = Members(user_info)
                 for m in members:
                     m['groups'] = [group]
+                    # m['invited'] = Utils.get_time_now()
                     member_data.update_member(m)
 
             filename = settings['report_dir'] + group + '.json'
@@ -58,7 +59,7 @@ class Action_ListGroupMembers:
                     break
                 top = member.rectangle().top
             # delay short time for new window open
-            info = Action_ListGroupMembers.get_member_info(win, member)
+            info = UI_WeChatPane.get_member_info(win, member)
 
             if info != None:
                 member_info.append(info)
@@ -67,8 +68,3 @@ class Action_ListGroupMembers:
                 #     break
         UI_ChatInfo.close_chat_info(win)
         return member_info
-
-    def get_member_info(win, member):
-        # open member card
-        UI_Comm.click_control(member)
-        return UI_WeChatPane.get_member_info(win)

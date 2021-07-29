@@ -40,7 +40,9 @@ class UI_ChatInfo:
         while retry > 0:
             retry -= 1
             button = win.window(title=title, control_type='Button')
-            UI_Comm.click_control(button)
+            # if group is been blocked, the button will not shown
+            if button.exists():
+                UI_Comm.click_control(button)
 
             pwin = win.window(title=title, control_type='Window')
             if pwin.exists():
