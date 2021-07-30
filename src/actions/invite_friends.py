@@ -11,7 +11,7 @@ from ui.chat_info import UI_ChatInfo
 from ui.comm import UI_Comm
 from ui.user import UI_User
 from ui.wechat_pane import UI_WeChatPane
-from member_info import Members
+from member_info import Members, Cache
 
 logger = getMyLogger(__name__)
 
@@ -28,6 +28,7 @@ class Action_InviteFriends:
         if user_info == None:
             return
         member_data = Members(user_info)
+        cache_data = Cache(user_info)
 
         group = settings['from_group']
         if UI_Chats.chat_to(win, group) != True:
@@ -39,10 +40,16 @@ class Action_InviteFriends:
         if 'limit' in settings:
             limit = int(settings['limit'])
 
-        for i in range(linit):
-            Action_InviteFriends.invite(win, member_data, text)
+        cache_item = 'invite_members.'+group
+        for i in range(limit):
+            index = cache_data.get(cache_item)
+            if index is None:
+                index = 0
+            index = Action_InviteFriends.invite(win, member_data, text, index)
+            if index != None:
+                cache_data.set('invite_members.'+group, index)
 
-    def invite(win, member_data, text):
+    def invite(win, member_data, text, start_index):
         pwin = UI_ChatInfo.open_chat_info(win)
         if pwin == None:
             return None
@@ -56,7 +63,13 @@ class Action_InviteFriends:
         #   1. is not a friend
         #   2. was not invited
         info = None
-        for member in members:
+        last_index = None
+        if start_index == None:
+            start_index = 0
+        start_index -= 1
+        while start_index < len(members)-1:
+            start_index += 1
+            member = members[start_index]
             if member.window_text() == 'Add':
                 continue
             if member.window_text() == 'Delete':
@@ -77,7 +90,10 @@ class Action_InviteFriends:
             if msg != False:
                 info['invited'] = Utils.get_time_now() + ' ' + msg
                 member_data.update_member(info)
+                last_index = start_index
+                break
         UI_ChatInfo.close_chat_info(win)
+        return last_index
 
     # return None for failed invite or
     # msg text for invited
@@ -130,7 +146,16 @@ class Action_InviteFriends:
         button = request.child_window(title='OK', control_type='Button')
         button.draw_outline()
         UI_Comm.click_control(button, True, False)
-        return Action_InviteFriends.confirm_sent(win)
+        msg = Action_InviteFriends.confirm_sent(win)
+
+        # in normal case, 'WeChat' wndow will e closed by above OK clicking
+        # as server limitation, in error case, the window may not close, we
+        # have to check and close it.
+        request = win.child_window(title='WeChat', control_type='Window')
+        if request.exists():
+            logger.warning('force to close "WeChat" window')
+            UI_Comm.click_control(request.child_window(title='OK', control_type='Button'))
+        return msg
 
     def confirm_sent(win):
         retry = 3
@@ -141,7 +166,10 @@ class Action_InviteFriends:
                 continue
             if not tip.child_window(title="Tip", control_type="Text").exists():
                 continue
-            button = tip.child_window(title='OK', control_type='Button')
+            # if server does not allow send inviting, the previous window will not
+            # close automatically by clicking OK button, thus two buttons will be
+            # detect, here we get the first one.
+            button = tip.child_window(title='OK', control_type='Button', found_index=0)
             if not button.exists():
                 continue
             msg = tip.child_window(control_type='Edit', found_index=0).window_text()

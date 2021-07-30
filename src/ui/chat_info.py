@@ -44,8 +44,9 @@ class UI_ChatInfo:
             if button.exists():
                 UI_Comm.click_control(button)
 
-            pwin = win.window(title=title, control_type='Window')
+            pwin = win.window(title=title, control_type='Window', found_index=0)
             if pwin.exists():
+                pwin.draw_outline()
                 return pwin
 
         logger.error('failed to open "%s" window', title)
@@ -80,14 +81,15 @@ class UI_ChatInfo:
             UI_Comm.click_control(view_more, True, False)
 
     def scroll_in_view(list, member):
-        rect = list.parent().rectangle()
+        p = list.parent()
+        rect = p.rectangle()
         m_rect = member.rectangle()
 
         while m_rect.bottom > rect.bottom:
-            UI_Comm.mouse_scroll(pwin, -1)     # scroll content up
+            UI_Comm.mouse_scroll(p, -1)     # scroll content up
             m_rect = member.rectangle()
         while m_rect.top < rect.top:
-            UI_Comm.mouse_scroll(pwin, 1)
+            UI_Comm.mouse_scroll(p, 1)
             m_rect = member.rectangle()
 
     def get_members(pwin):

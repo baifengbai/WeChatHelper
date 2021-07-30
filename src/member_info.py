@@ -19,6 +19,36 @@ logger = getMyLogger(__name__)
 #   },
 #   ...
 #   ]
+
+# cache = {
+#   'name': 'value',
+#   ...
+# }
+
+class Cache:
+    def __init__(self, user):
+        self.folder = '.\\data\\'+user['WeChatID'] + '\\'
+        self.filename = self.folder + 'cashe.json'
+        self.data = self.read()
+
+    def read(self):
+        data = Utils.from_json_file(self.filename)
+        if data == None:
+            return {}
+        return data
+
+    def write(self):
+        Utils.to_json_file(self.data, self.filename)
+
+    def set(self, name, value):
+        self.data[name] = value
+        self.write()
+
+    def get(self, name):
+        if name in self.data:
+            return self.data[name]
+        return None
+
 class Members:
     def __init__(self, user):
         if not 'WeChatID' in user:
