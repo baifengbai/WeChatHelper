@@ -91,7 +91,8 @@ class Action_InviteFriends:
                 info['invited'] = Utils.get_time_now() + ' ' + msg
                 member_data.update_member(info)
                 last_index = start_index
-                break
+            #break either succeed or not, return to start another one
+            break
         UI_ChatInfo.close_chat_info(win)
         return last_index
 
@@ -119,6 +120,7 @@ class Action_InviteFriends:
             pane.type_keys('{ESC}')
             return False
 
+        logger.info('inviting member "%s"', name)
         UI_Comm.click_control(add)
         return Action_InviteFriends.add_friend(win, text)
 
@@ -154,29 +156,33 @@ class Action_InviteFriends:
         request = win.child_window(title='WeChat', control_type='Window')
         if request.exists():
             logger.warning('force to close "WeChat" window')
-            UI_Comm.click_control(request.child_window(title='OK', control_type='Button'))
+            UI_Comm.click_control(request.child_window(title='Close', control_type='Button'))
         return msg
 
     def confirm_sent(win):
+        time.sleep(2)
         retry = 3
         while retry > 0:
             retry -= 1
-            tip = win.child_window(title='WeChat', control_type='Window')
-            if not tip.exists():
-                continue
-            if not tip.child_window(title="Tip", control_type="Text").exists():
-                continue
+            # 'top_level_only': False, 'enabled_only': False, 'visible_only':
+            tip = win.child_window(title='WeChat', control_type='Window', found_index=0)
+            # tip.print_control_identifiers(filename='tip.txt')
+            # if not tip.exists():
+            #     continue
+            # if not tip.child_window(title="Tip", control_type="Text").exists():
+            #     continue
             # if server does not allow send inviting, the previous window will not
             # close automatically by clicking OK button, thus two buttons will be
             # detect, here we get the first one.
-            button = tip.child_window(title='OK', control_type='Button', found_index=0)
-            if not button.exists():
-                continue
+            button = tip.child_window(title='OK', control_type='Button')
+            # if not button.exists():
+            #     continue
             msg = tip.child_window(control_type='Edit', found_index=0).window_text()
-            logger.info('"%s"', msg)
+            logger.info('response: "%s"', msg)
             button.draw_outline()
-            UI_Comm.click_control(button, True, False)
-            logger.info('confirmed sent')
+            UI_Comm.click_control(button)
+            if msg == u'操作过于频繁，请稍后再试。':
+                return False
             return msg
         logger.warning('no confirm sent')
         return False

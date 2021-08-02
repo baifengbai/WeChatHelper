@@ -71,7 +71,7 @@ class Members:
         Utils.to_json_file(self.data, self.filename)
 
     def update_member(self, info):
-        logger.info('update member: "%s"', info['name'])
+        # logger.info('update member: "%s"', info['name'])
         info['update'] = Utils.get_time_now()
         if 'img' in info:
             img = info['img']
