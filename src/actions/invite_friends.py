@@ -151,12 +151,12 @@ class Action_InviteFriends:
         msg = Action_InviteFriends.confirm_sent(win)
 
         # in normal case, 'WeChat' wndow will e closed by above OK clicking
-        # as server limitation, in error case, the window may not close, we
-        # have to check and close it.
-        request = win.child_window(title='WeChat', control_type='Window')
-        if request.exists():
-            logger.warning('force to close "WeChat" window')
-            UI_Comm.click_control(request.child_window(title='Close', control_type='Button'))
+        # in error case, the window may not close, we have to check and close it.
+        for i in range(3):
+            request = win.child_window(title='WeChat', control_type='Window')
+            if request.exists():
+                logger.warning('force to close "WeChat" window')
+                UI_Comm.click_control(request.child_window(title='Close', control_type='Button'))
         return msg
 
     def confirm_sent(win):
@@ -174,7 +174,7 @@ class Action_InviteFriends:
             # if server does not allow send inviting, the previous window will not
             # close automatically by clicking OK button, thus two buttons will be
             # detect, here we get the first one.
-            button = tip.child_window(title='OK', control_type='Button')
+            button = tip.child_window(title='OK', control_type='Button',found_index=0)
             # if not button.exists():
             #     continue
             msg = tip.child_window(control_type='Edit', found_index=0).window_text()
