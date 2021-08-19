@@ -59,50 +59,45 @@ class UI_ManageContacts:
 
         return 0
 
-    def get_item_info(item):
-        view = item.children()[0].children()[0].children()
-        # UI_Comm.click_control(view[0])    # checkbox
-        img = view[1].children()[0].capture_as_image()
-        img_key = Utils.get_img_key(img)
-        name = view[1].children()[1].window_text()
-        info = {'name':name, 'img_key':img_key}
-        return info
+    def search_text(pwin, text):
+        edit = pwin.child_window(title='Search', control_type='Edit')
+        if not edit.exists():
+            logger.warning('did not find edit field')
+            return None
+        # put focus on edit, clear willl show up
+        UI_Comm.click_control(edit)
+        clear = pwin.child_window(title='Clear', control_type='Button')
+        UI_Comm.click_control(clear)
+        # after clear the edit, need to set focus again
+        UI_Comm.click_control(edit)
+        edit.draw_outline()
+        edit.type_keys(Utils.parse_keys(text))
+        edit.type_keys('{ENTER}')
+        return edit
 
-    def is_same_info(info1, info2):
-        if info1['name'] != info2['name']:
-            return False
-        if info1['img_key'] != info2['img_key']:
-            return False
-        return True
+    def find_item(pwin, key):
+        UI_ManageContacts.search_text(pwin, key)
+        list = pwin.child_window(title='', control_type='List')
+        if not list.exists():
+            return None
+        items = list.children(control_type='ListItem')
+        if len(items) == 1:     # unique item in list
+            return items[0]
+        return None
 
-    def get_friends(pwin):
-        list = pwin.child_window(control_type='List', found_index=1)
-        list.draw_outline()
+    # search for wechat_id, return tag setting
+    def get_tag(pwin, contact):
+        tag = None
+        item = UI_ManageContacts.find_item(pwin, contact['WeChatID'])
+        if item == None:
+            item = UI_ManageContacts.find_item(pwin, contact['name'])
+        if item == None:
+            logger.warning('did not find "%s":"%s"', contact['name'], contact['WeChatID'])
+            return None
 
-        friends = []
-        finish = False
-        while finish == False:
-            if len(friends) == 0:
-                items = list.children(control_type='ListItem')
-                for item in items:
-                    info = UI_ManageContacts.get_item_info(item)
-                    friends.append(info)
-                    logger.info('%s', info)
-            else:
-                finish = True
-                for i in range(8):
-                    # get last item
-                    items = list.children(control_type='ListItem')
-                    index = len(items)-1
-                    tmp = []
-                    info = UI_ManageContacts.get_item_info(items[index])
-                    logger.info('+%s', info)
-                    if not UI_ManageContacts.is_same_info(info, friends[len(friends)-1]):
-                        finish = False
-                        friends.append(info)
-                        break
-                    UI_Comm.mouse_scroll(list, -1)
-        return friends
+        tag = item.children()[0].children()[0].children()[3]
+        tag = tag.children()[0].children()[0].window_text()
+        return tag
 
     def close_manage_contacts(pwin):
         button = pwin.child_window(title='Close', control_type='Button')

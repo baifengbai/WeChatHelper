@@ -1,0 +1,11 @@
+{
+  "actions":{
+    "invite_join_group":{
+      "to_group":"测试A",
+      "tags":[
+        "5"
+      ],
+      "invite_text":"BRI大讲堂讲座"
+    }
+  }
+}

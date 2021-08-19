@@ -1,7 +1,9 @@
 {
   "actions":{
     "list_contacts":{
-      "report_dir":".\\history\\group_members\\"
+      "comment":"导出通讯录中的人员信息",
+      "update_member":true,
+      "report_dir":".\\history\\"
     }
   }
 }

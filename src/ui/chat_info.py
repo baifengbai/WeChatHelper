@@ -80,6 +80,15 @@ class UI_ChatInfo:
         if view_more.exists():
             UI_Comm.click_control(view_more, True, False)
 
+    def click_add_member(pwin):
+        list = pwin.child_window(title='Members', control_type='List')
+        items = list.children(control_type='ListItem')
+        for item in items:
+            if item.window_text() == 'Add':
+                UI_Comm.click_control(item)
+                return True
+        return False
+
     def scroll_in_view(list, member):
         p = list.parent()
         rect = p.rectangle()

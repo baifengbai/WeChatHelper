@@ -24,7 +24,7 @@ class UI_Comm:
         if highlight is True:
             control.draw_outline()
         time.sleep(1)
-        
+
         coords = control.rectangle()
         if center == True:
             x = int((coords.right - coords.left) / 2)
@@ -40,7 +40,7 @@ class UI_Comm:
         # parse text
         control.type_keys(Utils.parse_keys(text), pause=0)
         time.sleep(1)   # have to delay short time, or 'Enter' does not work!
-        if control.get_value() == '':
+        if control.get_value() != text:
             # for input method
             control.type_keys('{ENTER}')
 

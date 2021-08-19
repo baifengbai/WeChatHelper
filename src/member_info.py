@@ -50,12 +50,12 @@ class Cache:
         return None
 
 class Members:
-    def __init__(self, user):
+    def __init__(self, user, filename='members.json'):
         if not 'WeChatID' in user:
             logger.error('need "WeChatID"')
         self.folder = '.\\data\\'+user['WeChatID'] + '\\'
         self.img_folder = self.folder + 'img\\'
-        self.filename = self.folder + 'members.json'
+        self.filename = self.folder + filename
         self.data = self.read()
 
         if os.path.exists(self.img_folder) == False:
@@ -105,7 +105,7 @@ class Members:
                 continue
             if x in ['update', 'imgfile']:
                 continue
-            if x in ['groups']:
+            if x in ['groups', 'invited_group']:
                 merged = self.merge_array(merged, info, x)
                 continue
             logger.warning('not merged item: "%s"', x)
