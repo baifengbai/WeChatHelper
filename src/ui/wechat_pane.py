@@ -57,6 +57,11 @@ class UI_WeChatPane:
         pane.type_keys('{ESC}')     # close popup card
         return info
 
+    def chat_to(win):
+        pane = win.child_window(title='WeChat', control_type='Pane')
+        button = pane.child_window(title='Messages', control_type='Button')
+        UI_Comm.click_control(button)
+        
     # following version runs much slower
     def get_member_info_0(win):
         pane = win.child_window(title='WeChat', control_type='Pane')

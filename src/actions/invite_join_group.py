@@ -27,19 +27,27 @@ class Action_InviteJoinGroup:
         if user_info == None:
             return
         contacts = Members(user_info, 'contacts.json').data
+        cache_data = Cache(user_info)
 
         group = settings['to_group']
         if UI_Chats.chat_to(win, group) != True:
             return
 
-        text = settings['invite_text']
         tags = settings['tags']
 
-        for contact in contacts:
-            if contact['tag'] in tags:
-                r = Action_InviteJoinGroup.invite(win, contact, text)
+        cache_item = 'invite_join_group.'+group
+        index = cache_data.get(cache_item)
+        if index == None:
+            index = 0
+        while index < len(contacts):
+            index1 = Action_InviteJoinGroup.invite(win, contacts, tags, index)
+            if index1 == index:
+                logger.warning('cannot continue')
+                break
+            cache_data.set(cache_item, index)
 
-    def invite(win, contact, text):
+    def invite(win, contacts, tags, index):
+        r_index = index     # for return
         pwin = UI_ChatInfo.open_chat_info(win)
         if pwin == None:
             return False
@@ -47,147 +55,38 @@ class Action_InviteJoinGroup:
         if UI_ChatInfo.click_add_member(pwin) == False:
             return False
 
-        add_member = pwin.child_window(title='AddMemberWnd', control_type='Window')
-        if not add_member.exists():
-            logger.warning('did not see "add member window" 1')
+        dlg = pwin.child_window(title='AddMemberWnd', control_type='Window')
+        if dlg.exists() == False:
+            logger.warning('did not see window: "AddMemberWnd"')
             return False
 
-        # r = True if unique contact was selected. otherwise False
-        r = Dlg_AddMember.add_member(pwin, contact['name'], contact['WeChatID'])
+        limit = 1
+        while r_index < len(contacts):
+            contact = contacts[r_index]
+            r_index += 1
+            if contact['tag'] in tags:
+                Dlg_AddMember.add_member(dlg, contact['name'], contact['WeChatID'])
+            if Dlg_AddMember.number_selected(dlg) >= limit:
+                break
 
+        if Dlg_AddMember.number_selected(dlg) > 0:
+            Dlg_AddMember.click_ok(dlg)
+        else:
+            Dlg_AddMember.click_cancel(dlg)
         # posible popup window
-        if pwin.exists():
-            popup = pwin.child_window(title='WeChat', control_type='Window')
+        if dlg.exists():
+            popup = dlg.child_window(title='WeChat', control_type='Window')
             if popup.exists():
+                msg = popup.child_window(control_type='Edit', found_index=0).window_text()
+                logger.warning('msg: "%s"', msg)
                 ok = popup.child_window(title='OK', control_type='Button')
                 UI_Comm.click_control(ok)
 
+                # "Unable to add member. Try again later."
+                if msg.startswith('Unable to add member'):
+                    r_index -= 1
+                    # time.sleep(3)
+                    Dlg_AddMember.click_cancel(dlg)
+
         UI_ChatInfo.close_chat_info(win)
-        return r
-
-    # return None for failed invite or
-    # msg text for invited
-    def invite_member(win, member, text):
-        name = member.window_text()
-        member.draw_outline()
-        # click the member icon to open
-        UI_Comm.click_control(member)
-        pane = win.child_window(title='WeChat', control_type='Pane')
-        if not pane.exists():
-            logger.warning('could not open friend "%s"', name)
-            pane.type_keys('{ESC}')
-            return False
-
-        # if member is already a friend, WeChat ID will be shown
-        # otherwise, 'Add as friend' button should be there.
-        add = pane.child_window(title='Add as friend', control_type='Button')
-        if not add.exists():
-            if pane.child_window(title="WeChat ID: ", control_type="Text").exists():
-                logger.info('"%s" is already friend', name)
-            else:
-                logger.warning('could not add friend "%s"', name)
-            pane.type_keys('{ESC}')
-            return False
-
-        logger.info('inviting member "%s"', name)
-        UI_Comm.click_control(add)
-        return Action_InviteFriends.add_friend(win, text)
-
-    def add_friend(win, text):
-        retry = 3
-        while retry > 0:
-            request = win.child_window(title='WeChat', control_type='Window')
-            if request.exists():
-                break
-            retry -= 1
-            time.sleep(1)   # wait popup show up
-
-        if not request.exists():
-            logger.info('did not see request dialog')
-            return False
-
-        if not request.child_window(title='Add Friends', control_type='Text').exists():
-            if request.child_window(title='Tip', control_type='Text').exists():
-                return Action_InviteFriends.confirm_sent(win)
-
-        edit = request.child_window(control_type='Edit', found_index=0)
-        UI_Comm.click_control(edit)
-        edit.type_keys('^a{BACKSPACE}')
-        UI_Comm.send_text(edit, text, False)
-        button = request.child_window(title='OK', control_type='Button')
-        button.draw_outline()
-        UI_Comm.click_control(button, True, False)
-        msg = Action_InviteFriends.confirm_sent(win)
-
-        # in normal case, 'WeChat' wndow will e closed by above OK clicking
-        # in error case, the window may not close, we have to check and close it.
-        for i in range(3):
-            request = win.child_window(title='WeChat', control_type='Window')
-            if request.exists():
-                logger.warning('force to close "WeChat" window')
-                UI_Comm.click_control(request.child_window(title='Close', control_type='Button'))
-        return msg
-
-    def confirm_sent(win):
-        time.sleep(2)
-        retry = 3
-        while retry > 0:
-            retry -= 1
-            # 'top_level_only': False, 'enabled_only': False, 'visible_only':
-            tip = win.child_window(title='WeChat', control_type='Window', found_index=0)
-            # tip.print_control_identifiers(filename='tip.txt')
-            # if not tip.exists():
-            #     continue
-            # if not tip.child_window(title="Tip", control_type="Text").exists():
-            #     continue
-            # if server does not allow send inviting, the previous window will not
-            # close automatically by clicking OK button, thus two buttons will be
-            # detect, here we get the first one.
-            button = tip.child_window(title='OK', control_type='Button',found_index=0)
-            # if not button.exists():
-            #     continue
-            msg = tip.child_window(control_type='Edit', found_index=0).window_text()
-            logger.info('response: "%s"', msg)
-            button.draw_outline()
-            UI_Comm.click_control(button)
-            if msg == u'操作过于频繁，请稍后再试。':
-                return False
-            return msg
-        logger.warning('no confirm sent')
-        return False
-
-'''
--- already friend
-child_window(title="WeChat", control_type="Pane")
-   |    |    |    |    |    | child_window(title="刘维平", control_type="Edit")
-   |    |    |    |    |    | child_window(title="WeChat ID: ", control_type="Text")
-   |    |    |    |    |    | child_window(title="ayixiangke", control_type="Edit")
-   |    |    |    | child_window(title="刘维平", control_type="Button")
-   |    |    |    |    | child_window(title="Region", control_type="Text")
-   |    |    |    |    | child_window(title="Linfen Shanxi ", control_type="Edit")
-   |    |    |    | child_window(title="Share Contact Card", control_type="Button")
-   |    |    |    | child_window(title="Messages", control_type="Button")
-
--- add friend
-child_window(title="WeChat", control_type="Pane")
-   |    |    |    |    |    | child_window(title="briadmin", control_type="Edit")
-   |    |    |    | child_window(title="briadmin", control_type="Button")
-   |    |    |    | child_window(title="Add as friend", control_type="Button")
-
--- request window
-child_window(title="WeChat", control_type="Window")
-   |    |    | child_window(title="Add Friends", control_type="Text")
-   |    |    | child_window(title="Close", control_type="Button")
-   |    |    | child_window(title="I'm 刘维平", control_type="Edit")
-   |    | child_window(title="Must send a friend request and wait until it's accepted.", control_type="Edit")
-   |    |    | child_window(title="OK", control_type="Button")
-   |    |    | child_window(title="Cancel", control_type="Button")
-
--- tip Pane
-child_window(title="WeChat", control_type="Window")
-   |    |    |    | child_window(title="Tip", control_type="Text")
-   |    |    |    | child_window(title="Close", control_type="Button")
-   |    |    |    | child_window(title="Sent", control_type="Edit")
-   |    |    |    | child_window(title="OK", control_type="Button")
-
-'''
+        return r_index

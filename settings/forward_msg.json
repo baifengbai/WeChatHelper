@@ -1,0 +1,13 @@
+{
+  "actions":{
+    "forward_msg":{
+      "from":"刘维平",
+      "to":[
+        {
+          "name": "briadmin",
+          "WeChatID": "bri_dajiangtang"
+        }
+      ]
+    }
+  }
+}

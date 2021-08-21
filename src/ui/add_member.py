@@ -8,25 +8,22 @@ from helper.my_logging import *
 logger = getMyLogger(__name__)
 
 class Dlg_AddMember:
-    def add_member(win, name, id=None):
-        # make sure the dialog was opened from the caller
-        pwin = win.child_window(title='AddMemberWnd', control_type='Window')
-        pwin.set_focus()
+    # returns number of selected
+    def add_member(dlg, name, id=None):
+        # dlg.set_focus()
 
-        r = Dlg_AddMember.search_unique(pwin, name)
+        r = Dlg_AddMember.search_unique(dlg, name)
         if r == False:
-            r = Dlg_AddMember.search_unique(pwin, id)
-        print(r)
-        r = False
-        if r:
-            Dlg_AddMember.click_ok(pwin)
-        else:
-            Dlg_AddMember.click_cancel(pwin)
+            r = Dlg_AddMember.search_unique(dlg, id)
+
+        if r == True:
+            logger.info('selected "%s"', name)
+
         return r
 
-    def search_unique(pwin, text):
+    def search_unique(dlg, text):
         # put name in 'Search Edit' field
-        edit = pwin.window(title='Search', control_type='Edit')
+        edit = dlg.window(title='Search', control_type='Edit')
 
         edit.draw_outline()
         edit.set_focus()
@@ -34,21 +31,18 @@ class Dlg_AddMember:
         UI_Comm.send_text(edit, text)
 
         # if the name exists, it must have only 1 candidate and 1 selected
-        n1 = Dlg_AddMember.number_candidate(pwin)
-        n2 = Dlg_AddMember.number_selected(pwin)
-        if n1 > n2:
-            logger.info('candidate:selected "%s" "%d:%d"', text, n1, n2)
+        n1 = Dlg_AddMember.number_candidate(dlg)
+        if n1 != 1:
             edit.type_keys('{ENTER}')   # de-select
-        r = n1 == 1 and n2 == 1
-        return r
+        return n1 == 1
 
     def click_ok(dlg):
         button = dlg.window(title='OK', control_type='Button')
-        UI_Comm.click_control(button, True, False)
+        UI_Comm.click_control(button)
 
     def click_cancel(dlg):
         button = dlg.window(title='Cancel', control_type='Button')
-        UI_Comm.click_control(button, True, False)
+        UI_Comm.click_control(button)
 
     def number_candidate(dlg):
         list = dlg.window(control_type='List', found_index=0)

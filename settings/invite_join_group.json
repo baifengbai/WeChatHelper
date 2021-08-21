@@ -1,11 +1,10 @@
 {
   "actions":{
     "invite_join_group":{
-      "to_group":"测试A",
+      "to_group":"【BRI】6️⃣1️⃣謝忠高博士",
       "tags":[
-        "5"
-      ],
-      "invite_text":"BRI大讲堂讲座"
+        ""
+      ]
     }
   }
 }

@@ -17,7 +17,7 @@ class Utils:
     #   'Monday 6:30 PM'
     # output format
     #   '2021-06-20 18:30'
-    def format_time_tag(stime):
+    def format_time_tag(stime, warning=True):
         now = datetime.datetime.now()
         t = ''
 
@@ -38,12 +38,17 @@ class Utils:
             t = now.strftime('%m-%d-%y ') + stime
         else:
             t = stime
-        tt = datetime.datetime.strptime(t, '%m-%d-%y %I:%M %p')
+        try:
+            tt = datetime.datetime.strptime(t, '%m-%d-%y %I:%M %p')
+        except ValueError:
+            if warning:
+                logger.warning('wrong date-time string "%s"', stime)
+            return None
         return tt.strftime('%Y-%m-%d %H:%M')
 
     def get_time_now():
         return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
+
     # write object to json file
     def to_json_file(obj, filename):
         if not os.path.exists(os.path.dirname(filename)):

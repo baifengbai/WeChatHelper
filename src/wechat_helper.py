@@ -14,6 +14,7 @@ from actions.invite_friends import Action_InviteFriends
 from actions.list_group_members import Action_ListGroupMembers
 from actions.list_contacts import Action_ListContacts
 from actions.invite_join_group import Action_InviteJoinGroup
+from actions.forward_msg import Action_ForwardMsg
 import pywinauto
 
 def main(setting_file):
@@ -54,6 +55,8 @@ def main(setting_file):
         Action_ListContacts.list_contacts(win, actions['list_contacts'])
     if 'invite_join_group' in actions:
         Action_InviteJoinGroup.invite_join_group(win, actions['invite_join_group'])
+    if 'forward_msg' in actions:
+        Action_ForwardMsg.forward_msg(win, actions['forward_msg'])
 
     logger.info('no more actions')
     # update_history()

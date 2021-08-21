@@ -56,17 +56,17 @@ class Dlg_DeleteMember:
 
     def confirm_delete(confirm):
         delete = confirm.window(title='Delete', control_type='Button')
-        UI_Comm.click_control(delete, True, False)
+        UI_Comm.click_control(delete)
 
     def click_delete(dlg):
         delete = dlg.window(title='Delete', control_type='Button')
         # once 'delete' clicked, another confirm window with the
         # same name button show up, doo not highlight it
-        UI_Comm.click_control(delete, True, False)
+        UI_Comm.click_control(delete)
 
     def close_dialog(dlg):
         button = dlg.window(title='Close', control_type='Button')
-        UI_Comm.click_control(button, True, False)
+        UI_Comm.click_control(button)
 
     def click_candidate(dlg, item):
         select = item.children()[0].children()[2]

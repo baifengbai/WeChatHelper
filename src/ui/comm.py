@@ -20,11 +20,8 @@ class UI_Comm:
         return app['WeChat']
 
     # optionally highlight the window rect
-    def click_control(control, center=True, highlight=True):
-        if highlight is True:
-            control.draw_outline()
-        time.sleep(1)
-
+    def click_control(control, center=True, button='left'):
+        control.draw_outline()
         coords = control.rectangle()
         if center == True:
             x = int((coords.right - coords.left) / 2)
@@ -32,7 +29,7 @@ class UI_Comm:
         else:
             x = 5
             y = 5
-        pywinauto.mouse.click(button='left', coords=(coords.left+x, coords.top+y))
+        pywinauto.mouse.click(button=button, coords=(coords.left+x, coords.top+y))
 
     def send_text(control, text, enter=True):
         # how to change input method?

@@ -27,3 +27,8 @@ class UI_User:
             return None
         info = UI_WeChatPane.get_member_info(win)
         return info
+
+    def chat_to(win):
+        if UI_User.click_user_button(win) == None:
+            return None
+        UI_WeChatPane.chat_to(win)

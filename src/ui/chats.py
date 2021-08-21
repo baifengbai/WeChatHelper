@@ -4,9 +4,11 @@
 #
 import time
 import pywinauto
+from ui.user import UI_User
 from ui.comm import UI_Comm
 from ui.add_member import Dlg_AddMember
 from ui.open_dialog import UI_OpenDialog
+from ui.dlg_forward import Dlg_Forward
 from helper.utils import Utils
 from helper.my_logging import *
 
@@ -22,10 +24,16 @@ class UI_Chats:
         return None
 
     def chat_to(win, name):
+        if name == None:
+            return UI_User.chat_to(win)
+
         # search from chat name list
         if UI_Chats.search_name(win, name) == True:
             return True
 
+        return False
+
+        '''
         # if we cannot find the name from search, try to search from
         # contacts list
         # click '+' ("Start Group Chat Button") to open the dialog
@@ -37,36 +45,80 @@ class UI_Chats:
             logger.warning('not in contacts: %s', name)
             return False
         return True
+        '''
 
-    # history = {
-    #   members:['name1', ...],
-    #   msgs:[{tag:time, msg:[text1, text2, ...]}]
-    # }
-    def get_chat_msgs(win):
-        msgs = []
+    def select_item(win, item):
+        one_by_one = win.child_window(title='One-by-One Forward', control_type='Text')
+        # scroll item into view
+
+        if one_by_one.exists():
+            UI_Comm.click_control(item)
+        else:
+            # item [text, link, photo,]
+            #   pane
+            #       pane    (fill)
+            #       pane    (body)
+            #       button  (sender)
+            body = item.children()[0].children()[1]
+            UI_Comm.click_control(body, button='right')
+            select = win.child_window(title="Select...", control_type="MenuItem")
+            UI_Comm.click_control(select)
+        # win.print_control_identifiers(filename='tt2.txt')
+        # input('wwwwww')
+
+    def select_last_sention_msgs(win, group):
+        msgs = 0
+        if UI_Chats.chat_to(win, group) == False:
+            logger.warning('cannot switch to "%s"', group)
+            return msgs
         list = win.child_window(title=u'消息', control_type='List')
         items = list.children(control_type='ListItem')
-        tag = None
-        msg = []
-        for item in items:
-            # print(item.window_text())
-            pane = item.children(control_type='Pane')
-            # date-time mark line
-            if pane[0].window_text() != '':
-                item_time = pane[0].window_text()
-                dt = utils.format_time_tag(item_time)
-                # got time tag
-                if tag != None:
-                    msgs.append({'tag':tag, 'msg':msg})
-                tag = dt
-                msg = []
-            # informational item
-            edit = pane[0].children(control_type='Edit')
-            if len(edit) > 0 and tag != None:
-                msg.append(edit[0].window_text())
-        if tag != None:
-            msgs.append({'tag':tag, 'msg':msg})
+        # select last section of messages
+        last = len(items)
+        limit = 5  # max number of forward msgs
+        while last > 0 and limit > 0:
+            last -= 1
+            limit -= 1
+            item = items[last]
+            t = Utils.format_time_tag(item.window_text(), warning=False)
+            if t != None:
+                break
+            # scroll item into view
+            rect = list.rectangle()
+            while item.rectangle().top < rect.top:     # in view top
+                UI_Comm.mouse_scroll(list, 1)  # content down
+
+            itop = item.rectangle().top
+            while itop > (rect.bottom+rect.top)/2:
+                UI_Comm.mouse_scroll(list, -1)
+                if itop == item.rectangle().top:
+                    break
+                itop = item.rectangle().top
+
+            UI_Chats.select_item(win, item)
+            msgs += 1
         return msgs
+
+    def forward_one_by_one(win):
+        forward = win.child_window(title='One-by-One Forward', control_type='Text')
+        button = forward.parent().children()[0]
+        UI_Comm.click_control(button)
+
+    def forward_msgs(win, group, contacts, index):
+        if UI_Chats.select_last_sention_msgs(win, group) == 0:
+            return index
+        UI_Chats.forward_one_by_one(win)
+        dlg = Dlg_Forward.get_forward_dlg(win)
+        if dlg == None:
+            return index
+        while index < len(contacts):
+            contact = contacts[index]
+            Dlg_Forward.add_member(dlg, contact['name'], contact['WeChatID'])
+            index += 1
+            if Dlg_Forward.number_selected(dlg) >= 9:
+                break
+        Dlg_Forward.click_send(dlg)
+        return index
 
     def get_title_button(win):
         # find title button at (334, 22)

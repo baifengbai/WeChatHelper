@@ -47,7 +47,7 @@ class Action_InviteFriends:
                 index = 0
             index = Action_InviteFriends.invite(win, member_data, text, index)
             if index != None:
-                cache_data.set('invite_members.'+group, index)
+                cache_data.set(cache_item, index)
 
     def invite(win, member_data, text, start_index):
         pwin = UI_ChatInfo.open_chat_info(win)
@@ -147,7 +147,7 @@ class Action_InviteFriends:
         UI_Comm.send_text(edit, text, False)
         button = request.child_window(title='OK', control_type='Button')
         button.draw_outline()
-        UI_Comm.click_control(button, True, False)
+        UI_Comm.click_control(button)
         msg = Action_InviteFriends.confirm_sent(win)
 
         # in normal case, 'WeChat' wndow will e closed by above OK clicking

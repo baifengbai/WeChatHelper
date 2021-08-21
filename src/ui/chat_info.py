@@ -78,7 +78,7 @@ class UI_ChatInfo:
         # in case of less member, there is no 'View More Members'
         view_more = pwin.window(title='View More Members', control_type='Button')
         if view_more.exists():
-            UI_Comm.click_control(view_more, True, False)
+            UI_Comm.click_control(view_more)
 
     def click_add_member(pwin):
         list = pwin.child_window(title='Members', control_type='List')
