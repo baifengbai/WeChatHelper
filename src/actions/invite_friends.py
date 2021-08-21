@@ -17,7 +17,6 @@ logger = getMyLogger(__name__)
 
 '''
     从指定的群组邀请朋友
-        随机抽取群里的朋友，邀请限定数量：limit", Default=10
         邀请发出后会在data/USER/members.json作标记 invited:datetime
 '''
 class Action_InviteFriends:
@@ -41,13 +40,16 @@ class Action_InviteFriends:
             limit = int(settings['limit'])
 
         cache_item = 'invite_members.'+group
+        index = cache_data.get(cache_item)
+        if index is None:
+            index = 0
+
         for i in range(limit):
-            index = cache_data.get(cache_item)
-            if index is None:
-                index = 0
-            index = Action_InviteFriends.invite(win, member_data, text, index)
-            if index != None:
-                cache_data.set(cache_item, index)
+            index0 = Action_InviteFriends.invite(win, member_data, text, index)
+            if index0 <= index:
+                break
+            cache_data.set(cache_item, index0)
+            index = index0
 
     def invite(win, member_data, text, start_index):
         pwin = UI_ChatInfo.open_chat_info(win)
@@ -63,9 +65,9 @@ class Action_InviteFriends:
         #   1. is not a friend
         #   2. was not invited
         info = None
-        last_index = None
         if start_index == None:
             start_index = 0
+        last_index = start_index
         start_index -= 1
         while start_index < len(members)-1:
             start_index += 1
