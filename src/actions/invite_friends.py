@@ -46,7 +46,7 @@ class Action_InviteFriends:
 
         for i in range(limit):
             index0 = Action_InviteFriends.invite(win, member_data, text, index)
-            if index0 <= index:
+            if index0 == None or index0 <= index:
                 break
             cache_data.set(cache_item, index0)
             index = index0

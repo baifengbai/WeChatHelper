@@ -45,6 +45,7 @@ class Action_InviteJoinGroup:
                 logger.warning('cannot continue')
                 break
             cache_data.set(cache_item, index)
+            index = index1
 
     def invite(win, contacts, tags, index):
         r_index = index     # for return
@@ -60,33 +61,38 @@ class Action_InviteJoinGroup:
             logger.warning('did not see window: "AddMemberWnd"')
             return False
 
-        limit = 1
+        limit = 40
         while r_index < len(contacts):
             contact = contacts[r_index]
             r_index += 1
             if contact['tag'] in tags:
+                logger.info('%s -- %s', contact['name'], contact['WeChatID'])
                 Dlg_AddMember.add_member(dlg, contact['name'], contact['WeChatID'])
             if Dlg_AddMember.number_selected(dlg) >= limit:
                 break
 
-        if Dlg_AddMember.number_selected(dlg) > 0:
-            Dlg_AddMember.click_ok(dlg)
+        manual = True
+        if manual:
+            input('enter to continue...' + str(r_index))
         else:
-            Dlg_AddMember.click_cancel(dlg)
-        # posible popup window
-        if dlg.exists():
-            popup = dlg.child_window(title='WeChat', control_type='Window')
-            if popup.exists():
-                msg = popup.child_window(control_type='Edit', found_index=0).window_text()
-                logger.warning('msg: "%s"', msg)
-                ok = popup.child_window(title='OK', control_type='Button')
-                UI_Comm.click_control(ok)
+            if Dlg_AddMember.number_selected(dlg) > 0:
+                Dlg_AddMember.click_ok(dlg)
+            else:
+                Dlg_AddMember.click_cancel(dlg)
+            # posible popup window
+            if dlg.exists():
+                popup = dlg.child_window(title='WeChat', control_type='Window')
+                if popup.exists():
+                    msg = popup.child_window(control_type='Edit', found_index=0).window_text()
+                    logger.warning('msg: "%s"', msg)
+                    ok = popup.child_window(title='OK', control_type='Button')
+                    UI_Comm.click_control(ok)
 
-                # "Unable to add member. Try again later."
-                if msg.startswith('Unable to add member'):
-                    r_index -= 1
-                    # time.sleep(3)
-                    Dlg_AddMember.click_cancel(dlg)
+                    # "Unable to add member. Try again later."
+                    if msg.startswith('Unable to add member'):
+                        r_index -= 1
+                        # time.sleep(3)
+                        Dlg_AddMember.click_cancel(dlg)
 
-        UI_ChatInfo.close_chat_info(win)
+            UI_ChatInfo.close_chat_info(win)
         return r_index

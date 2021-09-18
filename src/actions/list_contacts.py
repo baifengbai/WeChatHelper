@@ -39,3 +39,6 @@ class Action_ListContacts:
 
         filename = settings['report_dir'] + 'contacts.json'
         Utils.to_json_file(contacts, filename)
+
+        logger.info('number of member contacts: %d', len(member_data.data))
+        logger.info('number of contacts: %d', len(contacts))
