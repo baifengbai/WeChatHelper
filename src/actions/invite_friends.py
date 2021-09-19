@@ -127,29 +127,18 @@ class Action_InviteFriends:
         return Action_InviteFriends.add_friend(win, text)
 
     def add_friend(win, text):
-        retry = 3
-        while retry > 0:
-            request = win.child_window(title='WeChat', control_type='Window')
-            if request.exists():
-                break
-            retry -= 1
-            time.sleep(1)   # wait popup show up
+        request = win.child_window(title='Friend Request', control_type='Window')
 
-        if not request.exists():
-            logger.info('did not see request dialog')
-            return False
+        if request.exists():
+            # find the first 'edit', fill with inviting text
+            edit = request.child_window(control_type='Edit', found_index=0)
+            UI_Comm.click_control(edit)
+            edit.type_keys('^a{BACKSPACE}')
+            UI_Comm.send_text(edit, text, False)
 
-        if not request.child_window(title='Add Friends', control_type='Text').exists():
-            if request.child_window(title='Tip', control_type='Text').exists():
-                return Action_InviteFriends.confirm_sent(win)
+            button = request.child_window(title='OK', control_type='Button')
+            UI_Comm.click_control(button)
 
-        edit = request.child_window(control_type='Edit', found_index=0)
-        UI_Comm.click_control(edit)
-        edit.type_keys('^a{BACKSPACE}')
-        UI_Comm.send_text(edit, text, False)
-        button = request.child_window(title='OK', control_type='Button')
-        button.draw_outline()
-        UI_Comm.click_control(button)
         msg = Action_InviteFriends.confirm_sent(win)
 
         # in normal case, 'WeChat' wndow will e closed by above OK clicking
