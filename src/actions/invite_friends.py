@@ -127,17 +127,21 @@ class Action_InviteFriends:
         return Action_InviteFriends.add_friend(win, text)
 
     def add_friend(win, text):
-        request = win.child_window(title='Friend Request', control_type='Window')
+        retry= 3
+        while retry != 0:
+            retry -= 1
+            request = win.child_window(title='Friend Request', control_type='Window')
 
-        if request.exists():
-            # find the first 'edit', fill with inviting text
-            edit = request.child_window(control_type='Edit', found_index=0)
-            UI_Comm.click_control(edit)
-            edit.type_keys('^a{BACKSPACE}')
-            UI_Comm.send_text(edit, text, False)
+            if request.exists():
+                # find the first 'edit', fill with inviting text
+                edit = request.child_window(control_type='Edit', found_index=0)
+                UI_Comm.click_control(edit)
+                edit.type_keys('^a{BACKSPACE}')
+                UI_Comm.send_text(edit, text, False)
 
-            button = request.child_window(title='OK', control_type='Button')
-            UI_Comm.click_control(button)
+                button = request.child_window(title='OK', control_type='Button')
+                UI_Comm.click_control(button)
+                break
 
         msg = Action_InviteFriends.confirm_sent(win)
 
