@@ -21,15 +21,14 @@ class Action_ListContacts:
         UI_Contacts.click_contacts_button(win)
         contacts = UI_Contacts.get_contacts(win)
         # contacts = [{'WeChatID':'AngieChea001'}]
-        pwin = UI_ManageContacts.open_manage_contacts(win)
-        if pwin == None:
-            return
-
-        for c in contacts:
-            tag = UI_ManageContacts.get_tag(pwin, c)
-            c['tag']= tag
-
-        friends = UI_ManageContacts.close_manage_contacts(pwin)
+        if 'set_tag' in settings and settings['set_tag'] == True:
+            pwin = UI_ManageContacts.open_manage_contacts(win)
+            if pwin == None:
+                return
+            for c in contacts:
+                tag = UI_ManageContacts.get_tag(pwin, c)
+                c['tag']= tag
+            friends = UI_ManageContacts.close_manage_contacts(pwin)
 
         if 'update_member' in settings and settings['update_member'] == True:
             user_info = UI_User.get_user_info(win)
