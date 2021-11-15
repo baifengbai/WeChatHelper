@@ -3,11 +3,18 @@
 # Created:      Jun 22, 2021
 #
 from helper.utils import Utils
+import yaml
 
 class Settings:
     def get_settings(filename):
         obj = Utils.from_json_file(filename)
         return(obj)
+
+    def get_yaml(filename):
+        stream = open(filename, 'r', encoding="utf8")
+        settings = yaml.safe_load(stream)
+        print(settings)
+        return settings
 
     def get_moveout():
         return [

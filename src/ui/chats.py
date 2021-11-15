@@ -24,6 +24,7 @@ class UI_Chats:
         return None
 
     def chat_to(win, name):
+        # if there is no name, chat to self
         if name == None:
             return UI_User.chat_to(win)
 
@@ -120,58 +121,60 @@ class UI_Chats:
         Dlg_Forward.click_send(dlg)
         return index
 
-    def get_title_button(win):
-        # find title button at (334, 22)
-        logger.debug('search title')
-        index = 0
-        try:
-            while True:
-                button = win.child_window(control_type='Button', found_index=index)
-                position = button.rectangle().top - win.rectangle().top
-                if position <= 22:    # title button position from top window
-                    button.draw_outline()
-                    logger.debug('found title')
-                    return button
-                index += 1
-        except pywinauto.findwindows.ElementNotFoundError:
-            logger.error('did not find chat title button')
-        return None
-
     def search_name(win, name):
         logger.info('search group name "%s"', name)
         search = UI_Chats.set_focus_search(win)
         # entering [name] in edit box, then 'Enter'
         UI_Comm.send_text(search, name, False)
 
-        time.sleep(1)   # wait to get searh results
+        retry = 3
+        while retry > 0:
+            retry -= 1
+            list = win.child_window(title='Search Results', control_type='List')
+            if list.exists():
+                break
+            time.sleep(0.3)   # wait to get searh results
+
+        if not list.exists():
+            logger.warninig('did not find search result')
+            return False
 
         # check if there is the name in search results
         # if yes, click and return True
-        list = win.child_window(title='Search Results', control_type='List')
-        if list.exists():
-            items = list.children()
-            group = False
-            for item in items:
-                if item.window_text() == '':
-                    texts = item.children_texts()
-                    if len(texts) == 0:
-                        continue
-                    if texts[0] == 'Group Chats' or texts[0] == 'Contacts':
-                        group = True
-                    else:
-                        group = False
-                else:
-                    if group:
-                        if item.window_text() == name:
-                            UI_Comm.click_control(item)
-                            logger.debug('found "%s"', name)
-                            break
+        items = list.children()
+        category = None
+        found = False
+        for item in items:
+            if item.window_text() == '':
+                texts = item.children_texts()
+                if len(texts) == 0:
+                    category = None
+                    continue
+                category = texts[0]
+            else:
+                if category == 'Group Chats' or category == 'Contacts':
+                    if item.window_text() == name:
+                        UI_Comm.click_control(item)
+                        found = True
+                        break
+        if not found:
+            logger.warning('did not find named group "%s"', name)
+            return False
 
-        button = UI_Chats.get_title_button(win)
-        if button and button.window_text() == name:
-            return True
-        logger.warning('did not find named group "%s"', name)
-        return False
+        # double check
+        time.sleep(1)   # wait search result gets ready
+        return UI_Chats.verify_title(win, name)
+
+    def verify_title(win, name):
+        pane = win
+        for i in [1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]:
+            cs = pane.children()
+            pane = cs[i]
+
+        pane.draw_outline()
+        if pane.window_text() != name:
+            logger.warning('verifying title failed "%s"', name)
+        return True
 
     # click the edit box
     def click_edit(win):

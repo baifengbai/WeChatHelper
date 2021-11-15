@@ -15,18 +15,21 @@ logger = getMyLogger(__name__)
 # this is a popup window in case of click member in group member listing
 class UI_WeChatPane:
     def get_member_info(win, member=None):
-        retry = 3
+        # open member card window
+        # pane = win.child_window(title='WeChat', control_type='Pane', found_index=0)
+        # if not pane.exists() and member != None:
+            # open member card
+        # logger.info('click member...')
+        UI_Comm.click_control(member)
+
+        retry = 5
         while retry > 0:
             retry -= 1
-            if member != None:
-                # open member card
-                UI_Comm.click_control(member)
-                time.sleep(0.5)   # let window popup ready
-            pane = win.child_window(title='WeChat', control_type='Pane')
+            pane = win.child_window(title='WeChat', control_type='Pane', found_index=0)
             if pane.exists():
                 break
-
-        if not pane.exists():
+        # logger.info('got pane')
+        if retry <= 0:
             logger.warning('did not find member card pane')
             return None
 
@@ -37,23 +40,27 @@ class UI_WeChatPane:
         pane5c = pane4c[0].children()
         pane6c = pane5c[0].children()
         info['name'] = pane6c[0].children()[0].window_text()
-
+        # logger.info('got name')
         if len(pane6c) > 1:
             pane8c = pane6c[1].children()
             id_name = pane8c[0].window_text()
             id_value = pane8c[1].window_text()
             info[id_name.replace(' ','').replace(':','')] = id_value
+        # logger.info('got id')
 
-        img = pane5c[1].capture_as_image()
-        info['img'] = img
+        if True:   # disable image and others
+            img = pane5c[1].capture_as_image()
+            info['img'] = img
 
-        pane10c = pane4c[2].children()
-        for c in pane10c:
-            item = c.children()
-            n = item[0].window_text()
-            v = item[1].window_text()
-            info[n] = v
+            # logger.info('got img')
+            pane10c = pane4c[2].children()
+            for c in pane10c:
+                item = c.children()
+                n = item[0].window_text()
+                v = item[1].window_text()
+                info[n] = v
 
+        # logger.info('esc')
         pane.type_keys('{ESC}')     # close popup card
         return info
 
@@ -61,7 +68,7 @@ class UI_WeChatPane:
         pane = win.child_window(title='WeChat', control_type='Pane')
         button = pane.child_window(title='Messages', control_type='Button')
         UI_Comm.click_control(button)
-        
+
     # following version runs much slower
     def get_member_info_0(win):
         pane = win.child_window(title='WeChat', control_type='Pane')

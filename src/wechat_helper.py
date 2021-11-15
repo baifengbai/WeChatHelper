@@ -3,6 +3,7 @@
 # Created:      Jun 22, 2021
 #
 import sys, os
+import yaml
 from helper.my_logging import *
 from ui.comm import UI_Comm
 from settings.settings import Settings
@@ -20,7 +21,7 @@ import pywinauto
 def main(setting_file):
     logger.info('Using pywinauto version: %s', pywinauto.__version__)
     logger.info('settings from: %s', setting_file)
-    settings = Settings.get_settings(setting_file)
+    settings = Settings.get_yaml(setting_file)
     if settings == None:
         logger.error('error in setting file %s', setting_file)
         return
@@ -32,7 +33,7 @@ def main(setting_file):
     # raise window on top
     win.set_focus()
 
-    # pywinauto.timings.Timings.fast()
+    pywinauto.timings.Timings.fast()
     # pywinauto.timings.Timings.window_find_timeout = 0.2
 
     # before doing any action, make sure there is no sub-windows in open,

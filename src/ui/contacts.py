@@ -29,7 +29,12 @@ class UI_Contacts:
             return None
         return list
 
+    # return array of contacts or None
     def get_contacts(win):
+        # press contacts menu
+        if UI_Contacts.click_contacts_button(win) == None:
+            return None
+        # set focus on list
         list = UI_Contacts.get_contacts_list(win)
         UI_Comm.click_control(list)
         # goto top of the list
@@ -71,5 +76,5 @@ class UI_Contacts:
             if len(name) > 0 and len(value) > 0:
                 info[name[0].window_text().replace(' ', '')] = value[0].window_text()
 
-        print(info)
+        # print(info)
         return info

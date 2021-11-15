@@ -1,0 +1,10 @@
+# 功能：列出微信群里所有的成员，存到指定的地方
+# 如果目录下有同名文件，旧的文件将被覆盖
+---
+actions:
+  list_group_members:
+    groups:
+    - "1【BRI】+【阿兹海默症協会】"
+    - "VIP陪画Brian182009学习群"
+    # 保存Json文件目录，文件名：<群名>
+    save_to: ".\\history\\group_members\\"

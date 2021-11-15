@@ -5,6 +5,7 @@
 from helper.my_logging import *
 from ui.comm import UI_Comm
 from ui.chats import UI_Chats
+from ui.wechat_pane import UI_WeChatPane
 
 logger = getMyLogger(__name__)
 
@@ -30,12 +31,16 @@ class UI_ChatInfo:
         logger.info('found members: %d', len(members))
         return {'name':group_name, 'announce':announce, 'members':names}
 
+    # returns the 'chat info' window if open successfull,
+    # or None if failed
     def open_chat_info(win):
+        # if 'Chat Info' window exists, it is in open
         title='Chat Info'
         pwin = win.window(title=title, control_type='Window')
         if pwin.exists():
             return pwin
 
+        # try to open it b pressing '...' (Chat Info) button
         retry = 3
         while retry > 0:
             retry -= 1
@@ -53,7 +58,9 @@ class UI_ChatInfo:
         return None
 
     def close_chat_info(win):
+        # click edit field should cause close chat info window
         UI_Chats.click_edit(win)
+
         retry = 3
         while retry > 0:
             retry -= 1
@@ -61,7 +68,7 @@ class UI_ChatInfo:
             if not pwin.exists():
                 return True
 
-            # possible another window is openning:
+            # close any existing sub-window if there is
             #   AddMemberWnd(Window) - Close/Cancel(Button)
             #   DeleteMemberWnd(Window) - Close/Cancel(Button)
             #   WeChat(Window) for Group Notice - Close(Button)
@@ -90,28 +97,48 @@ class UI_ChatInfo:
         return False
 
     def scroll_in_view(list, member):
-        p = list.parent()
-        rect = p.rectangle()
+        rect = list.parent().rectangle()
         m_rect = member.rectangle()
 
         while m_rect.bottom > rect.bottom:
-            UI_Comm.mouse_scroll(p, -1)     # scroll content up
+            UI_Comm.mouse_scroll(list.parent(), -10)     # scroll content up
             m_rect = member.rectangle()
         while m_rect.top < rect.top:
-            UI_Comm.mouse_scroll(p, 1)
+            UI_Comm.mouse_scroll(list.parent(), 10)
             m_rect = member.rectangle()
 
-    def get_members(pwin):
+    def get_members(pwin, win, picks):
+        logger.info('get members from group')
         # view more suppose to list ALL members
         UI_ChatInfo.view_more(pwin)
 
         members = []
         list = pwin.window(title='Members', control_type='List')
         items = list.children(control_type='ListItem')
+        logger.info('%d members in the list', len(items))
+
         for item in items:
             name = item.window_text()
-            if name != 'Add' and name != 'Delete':
-                members.append(item)
+            if name == 'Add' or name == 'Delete':
+                continue
+
+            UI_ChatInfo.scroll_in_view(list, item)
+            info = UI_WeChatPane.get_member_info(win, item)
+            if '*' in picks:
+                data = info
+            else:
+                data = {}
+                if 'name' in info:
+                    data['name'] = info['name']
+                if 'WeChatID' in info:
+                    data['WeChatID'] = info['WeChatID']
+            if info != None:
+                members.append(data)
+                logger.info('%s', str(info))
+
+            # for testing
+            # if len(members) >= 15:
+            #     break
         return members
 
     def get_announcement(pwin):
