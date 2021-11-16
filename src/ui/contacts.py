@@ -30,7 +30,7 @@ class UI_Contacts:
         return list
 
     # return array of contacts or None
-    def get_contacts(win):
+    def get_contacts(win, picks=None):
         # press contacts menu
         if UI_Contacts.click_contacts_button(win) == None:
             return None
@@ -49,7 +49,14 @@ class UI_Contacts:
             if info != None:
                 if info == last_info:
                     break
-                contacts.append(info)
+                if picks == '*':
+                    contacts.append(info)
+                else:
+                    data = {}
+                    data['name'] = info['name']
+                    if 'WeChatID' in info:
+                        data['WeChatID'] = info['WeChatID']
+                    contacts.append(data)
                 last_info = info
             list.type_keys('{DOWN}')
 

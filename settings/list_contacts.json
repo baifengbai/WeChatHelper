@@ -1,9 +1,0 @@
-{
-  "actions":{
-    "list_contacts":{
-      "comment":"导出通讯录中的人员信息",
-      "update_member":true,
-      "report_dir":".\\history\\"
-    }
-  }
-}

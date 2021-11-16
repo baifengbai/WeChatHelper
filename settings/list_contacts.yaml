@@ -1,0 +1,7 @@
+# 功能：导出通讯录中的人员信息, 保存到指定的目录
+---
+actions:
+  list_contacts:
+  
+    # save to folder (end with path delimiter)
+    save_to: ".\\history\\group_members\\"

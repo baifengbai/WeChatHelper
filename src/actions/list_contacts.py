@@ -20,24 +20,14 @@ class Action_ListContacts:
 
         UI_Contacts.click_contacts_button(win)
         contacts = UI_Contacts.get_contacts(win)
-        # contacts = [{'WeChatID':'AngieChea001'}]
-        if 'set_tag' in settings and settings['set_tag'] == True:
-            pwin = UI_ManageContacts.open_manage_contacts(win)
-            if pwin == None:
-                return
-            for c in contacts:
-                tag = UI_ManageContacts.get_tag(pwin, c)
-                c['tag']= tag
-            friends = UI_ManageContacts.close_manage_contacts(pwin)
 
-        if 'update_member' in settings and settings['update_member'] == True:
-            user_info = UI_User.get_user_info(win)
-            member_data = Members(user_info, "contacts.json")
-            for m in contacts:
-                member_data.update_member(m)
+        data = {
+            'group_name': 'Contacts',
+            'time': Utils.get_time_now(),
+            'size': len(contacts),
+            'members': contacts
+        }
+        filename = settings['save_to'] + 'contacts.json'
+        Utils.to_json_file(data, filename)
 
-        filename = settings['report_dir'] + 'contacts.json'
-        Utils.to_json_file(contacts, filename)
-
-        logger.info('number of member contacts: %d', len(member_data.data))
         logger.info('number of contacts: %d', len(contacts))
