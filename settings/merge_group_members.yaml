@@ -1,0 +1,18 @@
+---
+actions:
+  merge_group_members:
+    # 群成员名单所在的目录
+    folder: ".\\history\\group_members\\"
+
+    # 邀请朋友加入的群名
+    save_to: "merged"
+
+    # 邀请的成员名单
+    include_groups:
+    - "contacts"
+
+    # 不包括的成员名单
+    exclude_groups:
+    - "blacklist"
+    - "1【BRI】+【阿兹海默症協会】"
+    - "2【BRI】+【阿兹海默症協会】"
